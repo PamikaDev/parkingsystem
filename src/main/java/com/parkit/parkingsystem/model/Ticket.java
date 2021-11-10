@@ -2,6 +2,8 @@ package com.parkit.parkingsystem.model;
 
 import java.util.Date;
 
+import com.parkit.parkingsystem.dao.TicketDAO;
+
 public class Ticket {
 	private int id;
 	private ParkingSpot parkingSpot;
@@ -9,6 +11,8 @@ public class Ticket {
 	private double price;
 	private Date inTime;
 	private Date outTime;
+	private boolean isRecurring;
+	private TicketDAO ticketDAO;
 
 	public int getId() {
 		return id;
@@ -56,5 +60,16 @@ public class Ticket {
 
 	public void setOutTime(Date outTime) {
 		this.outTime = outTime;
+	}
+
+	public boolean isRecurring() {
+		return isRecurring;
+	}
+
+	public void setRecurring(boolean isRecurring) {
+//		this.isRecurring = isRecurring;
+//		this.isRecurring = TicketDAO.isRecurring(vehicleRegNumber);
+		this.isRecurring = TicketDAO.isRecurring(vehicleRegNumber);
+
 	}
 }

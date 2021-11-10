@@ -1,5 +1,7 @@
 package com.parkit.parkingsystem.config;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,11 +15,16 @@ public class DataBaseConfig {
 
 	private static final Logger logger = LogManager.getLogger("DataBaseConfig");
 
-	public Connection getConnection() throws ClassNotFoundException, SQLException {
+	public Connection getConnection() throws ClassNotFoundException, SQLException, FileNotFoundException, IOException {
 		logger.info("Create DB connection");
 		Class.forName("com.mysql.cj.jdbc.Driver");
-		return DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/prod", "root", "rootroot");
+//		String url0 = ("jdbc:mysql://localhost:3306/test");
+		final String url = "jdbc:mysql://localhost:3306/prod";
+		final String dblogin = "root";
+		final String dbpassword = "rootroot";
+		try (Connection con = DriverManager.getConnection(url, dblogin, dbpassword)) {
+		}
+		return DriverManager.getConnection(url, dblogin, dbpassword);
 	}
 
 	public void closeConnection(Connection con) {
@@ -25,7 +32,7 @@ public class DataBaseConfig {
 			try {
 				con.close();
 				logger.info("Closing DB connection");
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				logger.error("Error while closing connection", e);
 			}
 		}
@@ -36,7 +43,7 @@ public class DataBaseConfig {
 			try {
 				ps.close();
 				logger.info("Closing Prepared Statement");
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				logger.error("Error while closing prepared statement", e);
 			}
 		}
@@ -47,7 +54,7 @@ public class DataBaseConfig {
 			try {
 				rs.close();
 				logger.info("Closing Result Set");
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				logger.error("Error while closing result set", e);
 			}
 		}
