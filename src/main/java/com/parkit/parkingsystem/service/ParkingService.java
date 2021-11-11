@@ -17,18 +17,18 @@ public class ParkingService {
 
 	private static final Logger logger = LogManager.getLogger("ParkingService");
 
-	private static FareCalculatorService fareCalculatorService = new FareCalculatorService();
+	private static FareCalculatorService fareCalculatorService = new FareCalculatorService(null);
 
 	private final InputReaderUtil inputReaderUtil;
 	private final ParkingSpotDAO parkingSpotDAO;
-	private final TicketDAO ticketDAO;
+	private static TicketDAO ticketDAO = new TicketDAO();
 
 	private boolean isRecurring = false;
 
 	public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO) {
 		this.inputReaderUtil = inputReaderUtil;
 		this.parkingSpotDAO = parkingSpotDAO;
-		this.ticketDAO = ticketDAO;
+		ParkingService.ticketDAO = ticketDAO;
 	}
 
 	public void processIncomingVehicle() {
@@ -41,13 +41,13 @@ public class ParkingService {
 				isRecurring = TicketDAO.isRecurring(vehicleRegNumber);
 				if (isRecurring) {
 					System.out.println(
-							"Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
+							" Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
 				} else {
-					System.out.println("Welcome");
+					System.out.println(" Welcome");
 				}
 
 				parkingSpot.setAvailable(false);
-				// allot this parking space and mark it's availability as false
+				// Allot this parking space and mark it's availability as false
 				parkingSpotDAO.updateParking(parkingSpot);
 
 				final Date inTime = new Date();
@@ -116,6 +116,7 @@ public class ParkingService {
 			final String vehicleRegNumber = getVehichleRegNumber();
 			final Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
 			final Date outTime = new Date();
+
 			ticket.setOutTime(outTime);
 			fareCalculatorService.calculateFare(ticket);
 
@@ -129,7 +130,7 @@ public class ParkingService {
 				parkingSpot.setAvailable(true);
 				parkingSpotDAO.updateParking(parkingSpot);
 				System.out.println("Please pay the parking fare:" + ticket.getPrice());
-				System.out.println(
+				logger.info(
 						"Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:" + outTime);
 			} else {
 				logger.info("Unable to update ticket information. Error occurred");

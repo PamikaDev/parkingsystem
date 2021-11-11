@@ -14,7 +14,7 @@ import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 
-public class TicketDAO {
+public class TicketDAO extends Ticket {
 
 	private static final Logger logger = LogManager.getLogger("TicketDAO");
 
@@ -35,12 +35,12 @@ public class TicketDAO {
 		return false;
 	}
 
-	public Ticket getTicket(String vehicleRegNumber) {
+	public Ticket getTicket(String getVehicleRegNumber) {
 		Ticket ticket = null;
 		try (Connection con = dataBaseConfig.getConnection();
 				PreparedStatement ps = con.prepareStatement(DBConstants.GET_TICKET, ResultSet.TYPE_SCROLL_SENSITIVE,
 						ResultSet.CONCUR_UPDATABLE)) {
-			ps.setString(1, vehicleRegNumber);
+			ps.setString(1, getVehicleRegNumber);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					ticket = new Ticket();
@@ -48,7 +48,7 @@ public class TicketDAO {
 							false);
 					ticket.setParkingSpot(parkingSpot);
 					ticket.setId(rs.getInt(2));
-					ticket.setVehicleRegNumber(vehicleRegNumber);
+					ticket.setVehicleRegNumber(getVehicleRegNumber);
 					ticket.setPrice(rs.getDouble(3));
 					ticket.setInTime(rs.getTimestamp(4));
 					ticket.setOutTime(rs.getTimestamp(5));
@@ -109,11 +109,11 @@ public class TicketDAO {
 		return false;
 	}
 
-	public DataBaseConfig getDataBaseConfig() {
+	public static DataBaseConfig getDataBaseConfig() {
 		return dataBaseConfig;
 	}
 
-	public void setDataBaseConfig(DataBaseConfig dataBaseConfig) {
+	public static void setDataBaseConfig(DataBaseConfig dataBaseConfig) {
 		TicketDAO.dataBaseConfig = dataBaseConfig;
 	}
 

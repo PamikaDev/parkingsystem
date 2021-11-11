@@ -11,7 +11,7 @@ public class InteractiveShell {
 
 	private static final Logger logger = LogManager.getLogger("InteractiveShell");
 
-	public static void loadInterface() throws ExceptionInInitializerError, Exception {
+	public static void loadInterface() {
 		logger.info("App initialized!!!");
 		System.out.println("Welcome to Parking System!");
 
@@ -39,7 +39,7 @@ public class InteractiveShell {
 				break;
 			}
 			default:
-				System.out.println("Unsupported option. Please enter a number corresponding to the provided menu");
+				logger.info("Unsupported option. Please enter a number corresponding to the provided menu");
 			}
 		}
 	}
