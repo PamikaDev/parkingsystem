@@ -76,7 +76,7 @@ public class TicketDAO extends Ticket {
 	}
 
 	// Check if a vehicle reg number is for a recurring user
-	public static boolean isRecurring(String vehicleRegNumber) {
+	public static boolean recurring(String vehicleRegNumber) {
 		try (Connection con = dataBaseConfig.getConnection();
 				PreparedStatement ps = con.prepareStatement(DBConstants.GET_RECURRING_VEHICLE,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {

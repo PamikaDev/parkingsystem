@@ -38,7 +38,7 @@ public class ParkingService {
 				final String vehicleRegNumber = getVehichleRegNumber();
 
 				// check if incoming véhicle is for a recurring user
-				isRecurring = TicketDAO.isRecurring(vehicleRegNumber);
+				isRecurring = TicketDAO.recurring(vehicleRegNumber);
 				if (isRecurring) {
 					System.out.println(
 							" Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");

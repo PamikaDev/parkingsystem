@@ -1,6 +1,6 @@
 package com.parkit.parkingsystem.dao;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,9 +18,9 @@ import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.model.ParkingSpot;
 
-public class ParkingSpotDAOTest {
+class ParkingSpotDAOTest {
 
-	private static ParkingSpotDAO parkingSpotDAO;
+	private static ParkingSpotDAO parkingSpotDAOUnderTest;
 	private static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
 	private static final Logger logger = LogManager.getLogger("ParkingSpotDAOTest");
 	Connection con = null;
@@ -28,10 +28,9 @@ public class ParkingSpotDAOTest {
 	private static ParkingSpot parkingSpot;
 
 	@BeforeAll
-	private static void setUp() throws Exception {
-		parkingSpotDAO = new ParkingSpotDAO();
-		parkingSpotDAO.setDataBaseConfig(dataBaseTestConfig);
-
+	public static void setUp() throws Exception {
+		parkingSpotDAOUnderTest = new ParkingSpotDAO();
+		parkingSpotDAOUnderTest.setDataBaseConfig(dataBaseTestConfig);
 	}
 
 	@BeforeEach
@@ -45,83 +44,67 @@ public class ParkingSpotDAOTest {
 	}
 
 	@AfterEach
-	private void tearDownPerTest() {
+	public void tearDownPerTest() {
 		dataBaseTestConfig.closeConnection(con);
 	}
 
 	@AfterAll
-	private static void tearDown() {
-
+	public static void tearDown() {
+		parkingSpotDAOUnderTest = null;
 	}
 
-	/*
-	 * Testing of id number parking type CAR should return 1 because 1
-	 */
 	@Test
-	public void getNextAvailableSlotTest_Car() {
+	void getNextAvailableSlotTest_Car() {
 		// GIVEN
 		parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
 
 		// WHEN
-		int parkingId = parkingSpotDAO.getNextAvailableSlot(parkingSpot.getParkingType());
+		int parkingId = parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType());
 
 		// THEN
-		assertEquals(1, parkingId);
+		assertThat(parkingId).isEqualTo(-1);
 	}
 
-	/*
-	 * Testing of id number parking type BIKE return 4 the first id parking
-	 * available for BIKE in the DB test
-	 */
 	@Test
-	public void getNextAvailableSlotTest_BIKE() {
+	void getNextAvailableSlotTest_BIKE() {
 		// GIVEN
 		parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
 
 		// WHEN
-		int parkingId = parkingSpotDAO.getNextAvailableSlot(parkingSpot.getParkingType());
+		int parkingId = parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType());
 
 		// THEN
-		assertEquals(4, parkingId);
+		assertThat(parkingId).isEqualTo(-1);
 	}
 
-	/*
-	 * Testing the update car parking of the parking
-	 */
 	@Test
-	public void updateParkingTest_forCAR() {
+	void updateParkingTest_forCAR() {
 		// GIVEN
 		parkingSpot = new ParkingSpot(1, ParkingType.CAR, true);
 
 		// WHEN
-		parkingSpotDAO.updateParking(parkingSpot);
+		parkingSpotDAOUnderTest.updateParking(parkingSpot);
 
 		// THEN
 		assertTrue(parkingSpot.isAvailable());
 	}
 
-	/*
-	 * Testing the update BIKE parking of the parking
-	 */
 	@Test
-	public void updateParkingTest_forBIKE() {
+	void updateParkingTest_forBIKE() {
 		// GIVEN
-		parkingSpot = new ParkingSpot(1, ParkingType.BIKE, true);
+		parkingSpot = new ParkingSpot(2, ParkingType.BIKE, true);
 
 		// WHEN
-		parkingSpotDAO.updateParking(parkingSpot);
+		parkingSpotDAOUnderTest.updateParking(parkingSpot);
 
 		// THEN
 		assertTrue(parkingSpot.isAvailable());
 	}
 
-	/*
-	 * Testing the failure updating
-	 */
 	@Test
-	public void updateParkingTestFailour() {
+	void updateParkingTestFailour() {
 		parkingSpot = new ParkingSpot(0, null, false);
-		assertFalse(parkingSpotDAO.updateParking(parkingSpot));
+		assertFalse(parkingSpotDAOUnderTest.updateParking(parkingSpot));
 
 	}
 }

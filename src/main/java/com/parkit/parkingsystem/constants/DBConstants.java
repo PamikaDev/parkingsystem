@@ -14,4 +14,7 @@ public class DBConstants {
 
 	public static final String GET_SAVED_TICKET = "select VEHICLE_REG_NUMBER from ticket where VEHICLE_REG_NUMBER =?";
 	public static final String GET_RECURRING_VEHICLE = "select VEHICLE_REG_NUMBER from ticket where VEHICLE_REG_NUMBER =?";
+
+	public static final String GET_CONNECTION_DATABASE = " com.mysql.cj.jdbc.ConnectionImpl@222afc67 ";
+
 }

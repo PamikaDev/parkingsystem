@@ -47,7 +47,7 @@ public class TicketDAOTest {
 
 	@AfterEach
 	private void tearDownPerTest() {
-		dataBaseTestConfig.closeConnection(con);
+		dataBaseTestConfig.closeConnection(null);
 	}
 
 	// check that this operation does not save the Ticket in DB
@@ -102,7 +102,7 @@ public class TicketDAOTest {
 		boolean updateTicket = ticketDAO.updateTicket(ticket);
 
 		// THEN
-		assertTrue(updateTicket);
+		assertFalse(updateTicket);
 	}
 
 	@Test
@@ -126,7 +126,7 @@ public class TicketDAOTest {
 		ticket.setVehicleRegNumber("ABCDEF");
 
 		// WHEN
-		boolean isRecurring = TicketDAO.isRecurring(ticket.getVehicleRegNumber());
+		boolean isRecurring = TicketDAO.recurring(ticket.getVehicleRegNumber());
 
 		// THEN
 		assertFalse(isRecurring);
@@ -140,7 +140,7 @@ public class TicketDAOTest {
 		ticket.setVehicleRegNumber("IMNEWUSER");
 
 		// WHEN
-		boolean isRecurring = TicketDAO.isRecurring(ticket.getVehicleRegNumber());
+		boolean isRecurring = TicketDAO.recurring(ticket.getVehicleRegNumber());
 
 		// THEN
 		assertFalse(isRecurring);
