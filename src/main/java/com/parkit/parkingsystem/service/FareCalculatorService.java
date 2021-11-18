@@ -120,8 +120,8 @@ public class FareCalculatorService {
 			final ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
 			ticket.setOutTime(outTime);
 			ticket.setParkingSpot(parkingSpot);
+			throw new NullPointerException("Out time provided is incorrect:" + ticket.getOutTime().toString());
 		}
-		throw new NullPointerException("Out time provided is incorrect:" + ticket.getOutTime().toString());
 	}
 
 	public void calculateFareBikeWithFutureInTime(Ticket ticket) {
@@ -130,8 +130,8 @@ public class FareCalculatorService {
 			final ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
 			ticket.setOutTime(outTime);
 			ticket.setParkingSpot(parkingSpot);
+			throw new NullPointerException("Out time provided is incorrect:" + ticket.getOutTime().toString());
 		}
-		throw new NullPointerException("Out time provided is incorrect:" + ticket.getOutTime().toString());
 	}
 
 	public void calculateFareBike_shouldThroNullPointerException(Ticket ticket) {
@@ -159,4 +159,5 @@ public class FareCalculatorService {
 	public void processExitingVehicle(Ticket ticket) {
 		// TODO Auto-generated method stub
 	}
+
 }

@@ -82,9 +82,8 @@ public class TicketDAO {
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
 			ps.setString(1, vehicleRegNumber);
 			try (ResultSet rs = ps.executeQuery()) {
-				if (rs.next()) {
-				}
 			}
+
 		} catch (final Exception ex) {
 			logger.error("Error fetching recurring vehicle ", ex);
 		}

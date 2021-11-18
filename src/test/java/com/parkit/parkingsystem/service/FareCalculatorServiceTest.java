@@ -250,7 +250,7 @@ class FareCalculatorServiceTest {
 
 	// 5% discount For recurring CAR users
 	@Test
-	void calculateFareCarForRecurringUser() {
+	void calculateFareTest_forCar_forRecurringUsers_shouldGetA5PerCentDisount() {
 
 		// 1H parking time for recurring CAR should give 1 * parking fare per hour *0.95
 		inTime.setTime(System.currentTimeMillis() - 60 * 60 * 1000);
@@ -267,7 +267,7 @@ class FareCalculatorServiceTest {
 
 	// 5% discount For recurring BIKE users
 	@Test
-	void calculateFareBikeForRecurringUser() {
+	void calculateFareTest_forBike_forRecurringUsers_shouldGetA5PerCentDisount() {
 
 		// 1H parking time for recurring BIKE give 1 * parking fare per hour *0.95
 		inTime.setTime(System.currentTimeMillis() - 60 * 60 * 1000);
@@ -277,8 +277,7 @@ class FareCalculatorServiceTest {
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
 
-		fareCalculatorServiceUnderTest
-				.calculateFare(ticket);
+		fareCalculatorServiceUnderTest.calculateFare(ticket);
 
 		assertThat(ticket.getPrice()).isEqualTo(Fare.BIKE_RATE_PER_HOUR / 2);
 
