@@ -12,15 +12,12 @@ public class FareCalculatorService {
 	private long outHour;
 	private long inHour;
 	private double duration;
-	private boolean isRecurring;
-
-//	private final boolean isRecurring = TicketDAO.recurring(null);
 
 	public void calculateFare(Ticket ticket) {
 		// EXOO#1
 		inHour = ticket.getInTime().getTime();
 		outHour = ticket.getOutTime().getTime();
-		duration = outHour - inHour;
+		duration = (double) outHour - inHour;
 
 		// STORY#1 : Free 30-min parking
 		if (duration > 30 * 60 * 1000) {
@@ -60,28 +57,21 @@ public class FareCalculatorService {
 
 	// STORY#2 : 5%-discount for recurring bike users
 	public void calculateFareBikeForRecurringUser(Ticket ticket) {
-
-		if (isRecurring && duration > 30 * 60 * 1000) {
-			inHour = ticket.getInTime().getTime();
-			outHour = ticket.getOutTime().getTime();
-			duration = outHour - inHour;
-			ticket.getParkingSpot().getParkingType();
+		inHour = ticket.getInTime().getTime();
+		outHour = ticket.getOutTime().getTime();
+		duration = (double) outHour - inHour;
+		if (duration > 30 * 60 * 1000) {
 			ticket.setPrice(0.95 * (duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.BIKE_RATE_PER_HOUR);
-		} else {
-			ticket.setPrice(ticket.getPrice());
 		}
 	}
 
 	// STORY#2 : 5%-discount for recurring car users
 	public void calculateFareCarForRecurringUser(Ticket ticket) {
-		if (isRecurring && duration > 30 * 60 * 1000) {
-			inHour = ticket.getInTime().getTime();
-			outHour = ticket.getOutTime().getTime();
-			duration = outHour - inHour;
-			ticket.getVehicleRegNumber();
+		inHour = ticket.getInTime().getTime();
+		outHour = ticket.getOutTime().getTime();
+		duration = (double) outHour - inHour;
+		if (duration > 30 * 60 * 1000) {
 			ticket.setPrice(0.95 * (duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.CAR_RATE_PER_HOUR);
-		} else {
-			ticket.setPrice(ticket.getPrice());
 		}
 	}
 
@@ -89,9 +79,7 @@ public class FareCalculatorService {
 
 		inHour = ticket.getInTime().getTime();
 		outHour = ticket.getOutTime().getTime();
-		duration = outHour - inHour;
-
-		ticket.getParkingSpot().getParkingType();
+		duration = (double) outHour - inHour;
 		if (duration > 30 * 60 * 1000) {
 			ticket.setPrice((duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.BIKE_RATE_PER_HOUR);
 		}
@@ -101,9 +89,7 @@ public class FareCalculatorService {
 
 		inHour = ticket.getInTime().getTime();
 		outHour = ticket.getOutTime().getTime();
-		duration = outHour - inHour;
-
-		ticket.getParkingSpot().getParkingType();
+		duration = (double) outHour - inHour;
 		if (duration > 30 * 60 * 1000) {
 			ticket.setPrice((duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.CAR_RATE_PER_HOUR);
 		}

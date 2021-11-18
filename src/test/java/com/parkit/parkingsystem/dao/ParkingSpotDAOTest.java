@@ -74,7 +74,7 @@ class ParkingSpotDAOTest {
 		int parkingId = parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType());
 
 		// THEN
-		assertThat(parkingId).isEqualTo(1);
+		assertThat(parkingId).isEqualTo(4);
 	}
 
 	@Test

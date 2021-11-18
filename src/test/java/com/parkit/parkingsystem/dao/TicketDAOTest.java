@@ -102,7 +102,7 @@ public class TicketDAOTest {
 		boolean updateTicket = ticketDAO.updateTicket(ticket);
 
 		// THEN
-		assertFalse(updateTicket);
+		assertTrue(updateTicket);
 	}
 
 	@Test

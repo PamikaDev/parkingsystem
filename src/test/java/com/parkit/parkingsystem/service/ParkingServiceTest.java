@@ -154,7 +154,6 @@ class ParkingServiceTest {
 
 		// GIVEN
 		try {
-			when(inputReaderUtil.readSelection()).thenReturn(0);
 
 			// WHEN
 			parkingServiceUnderTest.getVehichleTypeTest_shouldThrowIllegalArgumentException_forUnknowParkingType();

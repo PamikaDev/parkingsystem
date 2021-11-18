@@ -18,11 +18,11 @@ public class ParkingSpotDAO {
 	public DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
 	public int getNextAvailableSlot(ParkingType parkingType) {
-//		Connection con = null;
+
 		int result = 1;
-		try (Connection con = dataBaseConfig.getConnection();
-				final PreparedStatement ps = con.prepareStatement(DBConstants.GET_NEXT_PARKING_SPOT,
-						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+		try (Connection con = dataBaseConfig.getConnection()) {
+			final PreparedStatement ps = con.prepareStatement(DBConstants.GET_NEXT_PARKING_SPOT,
+					ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			ps.setString(1, parkingType.toString());
 			try (final ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
