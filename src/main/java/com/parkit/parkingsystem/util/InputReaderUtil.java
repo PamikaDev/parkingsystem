@@ -17,8 +17,9 @@ public class InputReaderUtil {
 		} catch (final Exception e) {
 			logger.error("Error while reading user input from Shell", e);
 			System.out.println("Error reading input. Please enter valid number for proceeding further");
-			return -1;
+
 		}
+		return -1;
 	}
 
 	public String readVehicleRegistrationNumber() throws Exception {

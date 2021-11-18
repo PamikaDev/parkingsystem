@@ -57,10 +57,6 @@ public class ParkingSpotDAO {
 		}
 	}
 
-	public DataBaseConfig getDataBaseConfig() {
-		return dataBaseConfig;
-	}
-
 	public void setDataBaseConfig(DataBaseConfig dataBaseConfig) {
 		this.dataBaseConfig = dataBaseConfig;
 	}

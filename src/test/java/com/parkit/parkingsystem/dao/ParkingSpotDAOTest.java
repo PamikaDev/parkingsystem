@@ -14,14 +14,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.parkit.parkingsystem.config.DataBaseConfig;
 import com.parkit.parkingsystem.constants.ParkingType;
-import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.model.ParkingSpot;
 
 class ParkingSpotDAOTest {
 
 	private static ParkingSpotDAO parkingSpotDAOUnderTest;
-	private static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
+	private static DataBaseConfig dataBaseTestConfig = new DataBaseConfig();
 	private static final Logger logger = LogManager.getLogger("ParkingSpotDAOTest");
 	Connection con = null;
 
@@ -62,7 +62,7 @@ class ParkingSpotDAOTest {
 		int parkingId = parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType());
 
 		// THEN
-		assertThat(parkingId).isEqualTo(-1);
+		assertThat(parkingId).isEqualTo(1);
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class ParkingSpotDAOTest {
 		int parkingId = parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType());
 
 		// THEN
-		assertThat(parkingId).isEqualTo(-1);
+		assertThat(parkingId).isEqualTo(4);
 	}
 
 	@Test

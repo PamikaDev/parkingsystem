@@ -15,7 +15,7 @@ public class Ticket {
 	}
 
 	public void setId(int id) {
-		this.id = id;
+		this.setId(id);
 	}
 
 	public ParkingSpot getParkingSpot() {

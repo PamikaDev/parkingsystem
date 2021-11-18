@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.util.Date;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,10 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.parkit.parkingsystem.config.DataBaseConfig;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
-import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
@@ -26,38 +27,45 @@ import com.parkit.parkingsystem.util.InputReaderUtil;
 @ExtendWith(MockitoExtension.class)
 class ParkingDataBaseIT {
 
-	private static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
 	private static ParkingSpotDAO parkingSpotDAO;
 	private static TicketDAO ticketDAO;
+	private static DataBasePrepareService dataBasePrepareService;
+
 	private static ParkingSpot parkingSpot;
 	private static Ticket ticket;
 
 	@Mock
 	private static InputReaderUtil inputReaderUtil;
+	private static DataBaseConfig dataBaseConfig;
 
 	@BeforeAll
 	private static void setUp() throws Exception {
 		parkingSpotDAO = new ParkingSpotDAO();
 		ticketDAO = new TicketDAO();
-		new DataBasePrepareService();
-		ticket = new Ticket();
-		parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+		parkingSpotDAO.setDataBaseConfig(dataBaseConfig);
+		TicketDAO.setDataBaseConfig(dataBaseConfig);
 	}
 
 	@BeforeEach
 	private void setUpPerTest() throws Exception {
-		parkingSpotDAO.setDataBaseConfig(dataBaseTestConfig);
-		TicketDAO.setDataBaseConfig(dataBaseTestConfig);
+		dataBasePrepareService = new DataBasePrepareService();
+		ticket = new Ticket();
+	}
+
+	@AfterEach
+	private void tearDownPerTest() {
+		dataBasePrepareService.clearDataBaseEntries();
 	}
 
 	@AfterAll
 	private static void tearDown() {
-
+		dataBaseConfig = null;
 	}
 
 	@Test
-	void testParkingACar() throws Exception {
+	void testParkingACar() {
 		final ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+		parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
 		parkingService.processIncomingVehicle();
 
 		// check that a ticket is actualy saved in DB
@@ -70,7 +78,22 @@ class ParkingDataBaseIT {
 	}
 
 	@Test
-	void testParkingLotExit() throws Exception {
+	void testParkingABike() {
+		final ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+		parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
+		parkingService.processIncomingVehicle();
+
+		// check that a ticket is actualy saved in DB
+		final boolean saved = ticketDAO.isSaved("ABCDEF");
+		assertFalse(saved);
+
+		// check that a Parking table is updated with availability
+		final boolean available = parkingSpot.isAvailable();
+		assertFalse(available);
+	}
+
+	@Test
+	void testParkingLotExit() {
 		// testParkingACar();
 		final ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 		final Date date = new Date();

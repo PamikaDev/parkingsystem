@@ -2,16 +2,20 @@ package com.parkit.parkingsystem.integration.service;
 
 import java.sql.Connection;
 
-import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.parkit.parkingsystem.config.DataBaseConfig;
 
 public class DataBasePrepareService {
 
-	DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
+	private static final Logger logger = LogManager.getLogger("DataBaseConfig");
+	DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
 	public void clearDataBaseEntries() {
 		Connection connection = null;
 		try {
-			connection = dataBaseTestConfig.getConnection();
+			connection = dataBaseConfig.getConnection();
 
 			// set parking entries to available
 			connection.prepareStatement("update parking set available = true").execute();
@@ -20,10 +24,10 @@ public class DataBasePrepareService {
 			connection.prepareStatement("truncate table ticket").execute();
 
 		} catch (final Exception e) {
-			e.printStackTrace();
+			logger.error("Unable to process clearDataBaseEntries", e);
 
 		} finally {
-			dataBaseTestConfig.closeConnection(connection);
+			dataBaseConfig.closeConnection(connection);
 		}
 	}
 }

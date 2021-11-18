@@ -14,7 +14,7 @@ import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 
-public class TicketDAO extends Ticket {
+public class TicketDAO {
 
 	private static final Logger logger = LogManager.getLogger("TicketDAO");
 
@@ -83,13 +83,13 @@ public class TicketDAO extends Ticket {
 			ps.setString(1, vehicleRegNumber);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
-					return true;
 				}
 			}
 		} catch (final Exception ex) {
 			logger.error("Error fetching recurring vehicle ", ex);
 		}
-		return false;
+
+		return vehicleRegNumber != null;
 	}
 
 	// Check if vehicle Reg Number is saved
