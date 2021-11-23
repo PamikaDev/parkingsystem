@@ -125,7 +125,7 @@ class FareCalculatorServiceTest {
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
 
-		fareCalculatorServiceUnderTest.calculateFare(ticket);
+		fareCalculatorServiceUnderTest.calculateFareCarWithLessThanOneHourParkingTime(ticket);
 
 		assertThat(ticket.getPrice()).isEqualTo(0.25 * Fare.CAR_RATE_PER_HOUR);
 	}

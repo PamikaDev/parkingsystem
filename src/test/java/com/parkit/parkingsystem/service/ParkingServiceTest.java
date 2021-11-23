@@ -58,7 +58,6 @@ class ParkingServiceTest {
 
 		ParkingSpot parkingSpot = new ParkingSpot(0, null, false);
 		parkingSpotDAO.updateParking(parkingSpot);
-//		Ticket ticket = new Ticket();
 		ticket.setParkingSpot(parkingSpot);
 		ticket.setVehicleRegNumber(null);
 		ticket.setPrice(0);

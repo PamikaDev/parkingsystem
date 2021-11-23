@@ -45,7 +45,6 @@ public class TicketDAOTest {
 
 	@AfterEach
 	private void tearDownPerTest() {
-//		dataBaseTestConfig.closeConnection(con);
 		dataBaseTestConfig.closeConnection(null);
 	}
 
@@ -56,7 +55,6 @@ public class TicketDAOTest {
 		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 		outTime = new Date();
 		ticketDAO.saveTicket(ticket);
-//		ticket.saveTicket(ticket);
 		assertFalse(ticketDAO.saveTicket(ticket));
 	}
 
@@ -70,7 +68,6 @@ public class TicketDAOTest {
 			outTime.setTime(0);
 
 			ticketDAO.saveTicket(ticket);
-//			ticket.saveTicket(ticket);
 		} catch (Exception e) {
 			assertTrue(e instanceof IllegalArgumentException);
 		}
@@ -82,14 +79,12 @@ public class TicketDAOTest {
 		ticket.setOutTime(outTime);
 		ticket.setPrice(1.5);
 		boolean updateTicket = ticketDAO.updateTicket(ticket);
-//		boolean updateTicket = ticket.updateTicket(ticket);
 		assertTrue(updateTicket);
 	}
 
 	@Test
 	public void updateTicketTest_False() {
 		boolean updateTicket = ticketDAO.updateTicket(ticket);
-//		boolean updateTicket = ticket.updateTicket(ticket);
 		assertFalse(updateTicket);
 	}
 
@@ -98,7 +93,6 @@ public class TicketDAOTest {
 	public void isRecurringTest_forRecurringUser_shouldReturnTrue() {
 		ticket.setVehicleRegNumber("ABCDEF");
 		boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
-//		boolean isRecurring = ticket.isRecurring(ticket.getVehicleRegNumber());
 		assertTrue(isRecurring);
 	}
 
@@ -107,7 +101,6 @@ public class TicketDAOTest {
 	public void isRecurringTest_forNewUser_shouldReturnFalse() {
 		ticket.setVehicleRegNumber("IMNEWUSER");
 		boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
-//		boolean isRecurring = ticket.isRecurring(ticket.getVehicleRegNumber());
 		assertFalse(isRecurring);
 	}
 
@@ -116,7 +109,6 @@ public class TicketDAOTest {
 	public void isSavedTest() {
 		ticket.setVehicleRegNumber("ABCDEF");
 		boolean isSaved = ticketDAO.isSaved(ticket.getVehicleRegNumber());
-		// boolean isSaved = ticket.isSaved();
 		assertTrue(isSaved);
 		System.out.println(isSaved);
 	}
@@ -127,11 +119,11 @@ public class TicketDAOTest {
 		ticket.setVehicleRegNumber(null);
 		try {
 			ticketDAO.isSaved(ticket.getVehicleRegNumber());
-//			ticket.isSaved();
+
 		} catch (Exception e) {
 			assertTrue(e instanceof IllegalArgumentException);
 		}
 		assertFalse(ticketDAO.isSaved(ticket.getVehicleRegNumber()));
-//		assertFalse(ticket.isSaved());
+
 	}
 }

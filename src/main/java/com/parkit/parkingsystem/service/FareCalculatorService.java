@@ -39,23 +39,6 @@ public class FareCalculatorService {
 			ticket.setPrice(0);
 		}
 
-		// 45 minutes parking time should give 3/4th parking fare
-		// But Free 30-min parking
-		if (duration == 45 * 60 * 1000) {
-			switch (ticket.getParkingSpot().getParkingType()) {
-			case CAR: {
-				ticket.setPrice(0.25 * Fare.CAR_RATE_PER_HOUR);
-				break;
-			}
-			case BIKE: {
-				ticket.setPrice(0.25 * Fare.BIKE_RATE_PER_HOUR);
-				break;
-			}
-
-			}
-		} else {
-			ticket.setPrice(ticket.getPrice());
-		}
 	}
 
 	// STORY#2 : 5%-discount for recurring bike users
@@ -100,6 +83,31 @@ public class FareCalculatorService {
 		} else {
 			ticket.setPrice(duration);
 		}
+	}
+
+	public void calculateFareCarWithLessThanOneHourParkingTime(Ticket ticket) {
+		inHour = ticket.getInTime().getTime();
+		outHour = ticket.getOutTime().getTime();
+		duration = (double) outHour - inHour;
+
+		// 45 minutes parking time should give 3/4th parking fare
+		// But Free 30-min parking
+		if (duration == 45 * 60 * 1000) {
+			switch (ticket.getParkingSpot().getParkingType()) {
+			case CAR: {
+				ticket.setPrice(0.25 * Fare.CAR_RATE_PER_HOUR);
+				break;
+			}
+			case BIKE: {
+				ticket.setPrice(0.25 * Fare.BIKE_RATE_PER_HOUR);
+				break;
+			}
+
+			}
+		} else {
+			ticket.setPrice(ticket.getPrice());
+		}
+
 	}
 
 }
