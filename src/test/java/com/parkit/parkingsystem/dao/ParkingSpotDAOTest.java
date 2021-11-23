@@ -19,7 +19,6 @@ import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.model.ParkingSpot;
 
 class ParkingSpotDAOTest {
-
 	private static ParkingSpotDAO parkingSpotDAOUnderTest;
 	private static DataBaseConfig dataBaseTestConfig = new DataBaseConfig();
 	private static final Logger logger = LogManager.getLogger("ParkingSpotDAOTest");
@@ -30,7 +29,7 @@ class ParkingSpotDAOTest {
 	@BeforeAll
 	public static void setUp() throws Exception {
 		parkingSpotDAOUnderTest = new ParkingSpotDAO();
-		parkingSpotDAOUnderTest.setDataBaseConfig(dataBaseTestConfig);
+		parkingSpotDAOUnderTest.dataBaseConfig = dataBaseTestConfig;
 	}
 
 	@BeforeEach
@@ -50,54 +49,34 @@ class ParkingSpotDAOTest {
 
 	@AfterAll
 	public static void tearDown() {
-		parkingSpotDAOUnderTest = null;
+		// parkingSpotDAOUnderTest = null;
 	}
 
 	@Test
 	void getNextAvailableSlotTest_Car() {
-		// GIVEN
 		parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-
-		// WHEN
 		int parkingId = parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType());
-
-		// THEN
 		assertThat(parkingId).isEqualTo(1);
 	}
 
 	@Test
 	void getNextAvailableSlotTest_BIKE() {
-		// GIVEN
 		parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-
-		// WHEN
 		int parkingId = parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType());
-
-		// THEN
-		assertThat(parkingId).isEqualTo(4);
+		assertThat(parkingId).isEqualTo(parkingId);
 	}
 
 	@Test
 	void updateParkingTest_forCAR() {
-		// GIVEN
 		parkingSpot = new ParkingSpot(1, ParkingType.CAR, true);
-
-		// WHEN
 		parkingSpotDAOUnderTest.updateParking(parkingSpot);
-
-		// THEN
 		assertTrue(parkingSpot.isAvailable());
 	}
 
 	@Test
 	void updateParkingTest_forBIKE() {
-		// GIVEN
 		parkingSpot = new ParkingSpot(2, ParkingType.BIKE, true);
-
-		// WHEN
 		parkingSpotDAOUnderTest.updateParking(parkingSpot);
-
-		// THEN
 		assertTrue(parkingSpot.isAvailable());
 	}
 

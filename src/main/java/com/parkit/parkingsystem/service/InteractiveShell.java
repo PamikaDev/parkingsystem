@@ -16,14 +16,14 @@ public class InteractiveShell {
 		System.out.println("Welcome to Parking System!");
 
 		boolean continueApp = true;
-		final InputReaderUtil inputReaderUtil = new InputReaderUtil();
-		final ParkingSpotDAO parkingSpotDAO = new ParkingSpotDAO();
-		final TicketDAO ticketDAO = new TicketDAO();
-		final ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+		InputReaderUtil inputReaderUtil = new InputReaderUtil();
+		ParkingSpotDAO parkingSpotDAO = new ParkingSpotDAO();
+		TicketDAO ticketDAO = new TicketDAO();
+		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
 		while (continueApp) {
 			loadMenu();
-			final int option = inputReaderUtil.readSelection();
+			int option = inputReaderUtil.readSelection();
 			switch (option) {
 			case 1: {
 				parkingService.processIncomingVehicle();
@@ -39,7 +39,7 @@ public class InteractiveShell {
 				break;
 			}
 			default:
-				logger.info("Unsupported option. Please enter a number corresponding to the provided menu");
+				System.out.println("Unsupported option. Please enter a number corresponding to the provided menu");
 			}
 		}
 	}

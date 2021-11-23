@@ -1,4 +1,4 @@
-package com.parkit.parkingsystem.config;
+package com.parkit.parkingsystem.integration.config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,17 +9,20 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DataBaseConfig {
+import com.parkit.parkingsystem.config.DataBaseConfig;
 
-	private static final Logger logger = LogManager.getLogger("DataBaseConfig");
+public class DataBaseTestConfig extends DataBaseConfig {
 
+	private static final Logger logger = LogManager.getLogger("DataBaseTestConfig");
+
+	@Override
 	public Connection getConnection() throws ClassNotFoundException, SQLException {
 		logger.info("Create DB connection");
 		Class.forName("com.mysql.cj.jdbc.Driver");
-		return DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/prod", "root", "rootroot");
+		return DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "rootroot");
 	}
 
+	@Override
 	public void closeConnection(Connection con) {
 		if (con != null) {
 			try {
@@ -31,6 +34,7 @@ public class DataBaseConfig {
 		}
 	}
 
+	@Override
 	public void closePreparedStatement(PreparedStatement ps) {
 		if (ps != null) {
 			try {
@@ -42,6 +46,7 @@ public class DataBaseConfig {
 		}
 	}
 
+	@Override
 	public void closeResultSet(ResultSet rs) {
 		if (rs != null) {
 			try {

@@ -15,7 +15,7 @@ public class Ticket {
 	}
 
 	public void setId(int id) {
-		this.setId(id);
+		this.id = id;
 	}
 
 	public ParkingSpot getParkingSpot() {
@@ -30,8 +30,8 @@ public class Ticket {
 		return vehicleRegNumber;
 	}
 
-	public String setVehicleRegNumber(String vehicleRegNumber) {
-		return this.vehicleRegNumber = vehicleRegNumber;
+	public void setVehicleRegNumber(String vehicleRegNumber) {
+		this.vehicleRegNumber = vehicleRegNumber;
 	}
 
 	public double getPrice() {
@@ -57,5 +57,4 @@ public class Ticket {
 	public void setOutTime(Date outTime) {
 		this.outTime = outTime;
 	}
-
 }

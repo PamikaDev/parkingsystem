@@ -13,9 +13,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.parkit.parkingsystem.config.DataBaseConfig;
-import com.parkit.parkingsystem.constants.ParkingType;
-import com.parkit.parkingsystem.model.ParkingSpot;
+import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.model.Ticket;
 
 public class TicketDAOTest {
@@ -25,15 +23,14 @@ public class TicketDAOTest {
 	private static Date inTime;
 	private static Date outTime;
 
-	public static DataBaseConfig dataBaseTestConfig = new DataBaseConfig();
+	public static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
 	Connection con = null;
 	private static final Logger logger = LogManager.getLogger("TicketDAOTest");
 
 	@BeforeAll
 	private static void setUp() throws Exception {
 		ticketDAO = new TicketDAO();
-		TicketDAO.setDataBaseConfig(dataBaseTestConfig);
-
+		ticketDAO.dataBaseConfig = dataBaseTestConfig;
 	}
 
 	@BeforeEach
@@ -48,43 +45,32 @@ public class TicketDAOTest {
 
 	@AfterEach
 	private void tearDownPerTest() {
+//		dataBaseTestConfig.closeConnection(con);
 		dataBaseTestConfig.closeConnection(null);
 	}
 
 	// check that this operation does not save the Ticket in DB
 	@Test
 	public void saveTicketTest() throws Exception {
-
-		new ParkingSpot(1, ParkingType.CAR, false);
-
 		inTime = new Date();
 		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 		outTime = new Date();
-
-		// WHEN
 		ticketDAO.saveTicket(ticket);
-
-		// THEN
+//		ticket.saveTicket(ticket);
 		assertFalse(ticketDAO.saveTicket(ticket));
-
 	}
 
 	// return an Exception when the date of inTime and outTime are null
 	@Test
 	public void saveTicketTest_shouldReturnException() {
-
-		new ParkingSpot(1, ParkingType.CAR, false);
-
 		try {
 			inTime = new Date();
 			inTime.setTime(0);
 			outTime = new Date();
 			outTime.setTime(0);
 
-			// WHEN
 			ticketDAO.saveTicket(ticket);
-
-			// THEN
+//			ticket.saveTicket(ticket);
 		} catch (Exception e) {
 			assertTrue(e instanceof IllegalArgumentException);
 		}
@@ -92,93 +78,60 @@ public class TicketDAOTest {
 
 	@Test
 	public void updateTicketTest() {
-
-		// GIVEN
 		outTime = new Date();
 		ticket.setOutTime(outTime);
 		ticket.setPrice(1.5);
-
-		// WHEN
 		boolean updateTicket = ticketDAO.updateTicket(ticket);
-
-		// THEN
+//		boolean updateTicket = ticket.updateTicket(ticket);
 		assertTrue(updateTicket);
 	}
 
 	@Test
 	public void updateTicketTest_False() {
-
-		// GIVEN
-		// ALL is already done in Before Each and Befor All!
-
-		// WHEN
 		boolean updateTicket = ticketDAO.updateTicket(ticket);
-
-		// THEN
+//		boolean updateTicket = ticket.updateTicket(ticket);
 		assertFalse(updateTicket);
 	}
 
 	// Check that a vehicle register number is for a recurring user
 	@Test
 	public void isRecurringTest_forRecurringUser_shouldReturnTrue() {
-
-		// GIVEN
 		ticket.setVehicleRegNumber("ABCDEF");
-
-		// WHEN
-		boolean isRecurring = TicketDAO.recurring(ticket.getVehicleRegNumber());
-
-		// THEN
+		boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
+//		boolean isRecurring = ticket.isRecurring(ticket.getVehicleRegNumber());
 		assertTrue(isRecurring);
 	}
 
 	// Check that a new vehicle register number is not for a recurring user
 	@Test
 	public void isRecurringTest_forNewUser_shouldReturnFalse() {
-
-		// GIVEN
 		ticket.setVehicleRegNumber("IMNEWUSER");
-
-		// WHEN
-		boolean isRecurring = TicketDAO.recurring(ticket.getVehicleRegNumber());
-
-		// THEN
-		assertTrue(isRecurring);
+		boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
+//		boolean isRecurring = ticket.isRecurring(ticket.getVehicleRegNumber());
+		assertFalse(isRecurring);
 	}
 
 	// Check if vehicle Reg Number is saved
 	@Test
 	public void isSavedTest() {
-
-		// GIVEN
 		ticket.setVehicleRegNumber("ABCDEF");
-
-		// WHEN
 		boolean isSaved = ticketDAO.isSaved(ticket.getVehicleRegNumber());
-
-		// THEN
-		assertFalse(isSaved);
+		// boolean isSaved = ticket.isSaved();
+		assertTrue(isSaved);
 		System.out.println(isSaved);
 	}
 
-	// the following test of the vehicle Register Number should return an Exception
-	// and should not save it in the DB
+	// return an Exception and should not save it in the DB
 	@Test
 	public void isSavedTest_shouldReturnException() {
-
-		// GIVEN
 		ticket.setVehicleRegNumber(null);
-
-		// WHEN
 		try {
 			ticketDAO.isSaved(ticket.getVehicleRegNumber());
-
-		}
-		// THEN
-		catch (Exception e) {
+//			ticket.isSaved();
+		} catch (Exception e) {
 			assertTrue(e instanceof IllegalArgumentException);
 		}
 		assertFalse(ticketDAO.isSaved(ticket.getVehicleRegNumber()));
+//		assertFalse(ticket.isSaved());
 	}
-
 }

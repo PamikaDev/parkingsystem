@@ -11,7 +11,7 @@
 	<properties>
 		<dep.junit.version>5.8.1</dep.junit.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.source>16</maven.compiler.source>
 		<maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
 		<sonar.organization>pamikadev</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>

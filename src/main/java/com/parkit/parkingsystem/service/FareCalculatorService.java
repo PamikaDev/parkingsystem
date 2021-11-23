@@ -1,10 +1,6 @@
 package com.parkit.parkingsystem.service;
 
-import java.util.Date;
-
 import com.parkit.parkingsystem.constants.Fare;
-import com.parkit.parkingsystem.constants.ParkingType;
-import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
@@ -14,9 +10,15 @@ public class FareCalculatorService {
 	private double duration;
 
 	public void calculateFare(Ticket ticket) {
-		// EXOO#1
+		if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
+			throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
+		}
+
+		// getTime() is in milliseconds, type of getTime() is long
 		inHour = ticket.getInTime().getTime();
 		outHour = ticket.getOutTime().getTime();
+
+		// get duration is in milliseconds, type of duration must be double
 		duration = (double) outHour - inHour;
 
 		// STORY#1 : Free 30-min parking
@@ -30,7 +32,8 @@ public class FareCalculatorService {
 				ticket.setPrice((duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.BIKE_RATE_PER_HOUR);
 				break;
 			}
-
+			default:
+				throw new IllegalArgumentException("Unkown Parking Type");
 			}
 		} else {
 			ticket.setPrice(0);
@@ -56,7 +59,7 @@ public class FareCalculatorService {
 	}
 
 	// STORY#2 : 5%-discount for recurring bike users
-	public void calculateFareBikeForRecurringUser(Ticket ticket) {
+	public void calculateFareTest_forBike_forRecurringUsers_shouldGetA5PerCentDisount(Ticket ticket) {
 		inHour = ticket.getInTime().getTime();
 		outHour = ticket.getOutTime().getTime();
 		duration = (double) outHour - inHour;
@@ -66,7 +69,7 @@ public class FareCalculatorService {
 	}
 
 	// STORY#2 : 5%-discount for recurring car users
-	public void calculateFareCarForRecurringUser(Ticket ticket) {
+	public void calculateFareTest_forCar_forRecurringUsers_shouldGetA5PerCentDisount(Ticket ticket) {
 		inHour = ticket.getInTime().getTime();
 		outHour = ticket.getOutTime().getTime();
 		duration = (double) outHour - inHour;
@@ -82,6 +85,8 @@ public class FareCalculatorService {
 		duration = (double) outHour - inHour;
 		if (duration > 30 * 60 * 1000) {
 			ticket.setPrice((duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.BIKE_RATE_PER_HOUR);
+		} else {
+			ticket.setPrice(duration);
 		}
 	}
 
@@ -92,58 +97,9 @@ public class FareCalculatorService {
 		duration = (double) outHour - inHour;
 		if (duration > 30 * 60 * 1000) {
 			ticket.setPrice((duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.CAR_RATE_PER_HOUR);
+		} else {
+			ticket.setPrice(duration);
 		}
-	}
-
-	public void calculateFareUnkownType(Ticket ticket) {
-		ticket.setParkingSpot(null);
-		throw new NullPointerException("Unkown Type");
-	}
-
-	public void calculateFareCarWithFutureInTime(Ticket ticket) {
-		if (ticket.getOutTime() == null || ticket.getOutTime().before(ticket.getInTime())) {
-			final Date outTime = new Date();
-			final ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-			ticket.setOutTime(outTime);
-			ticket.setParkingSpot(parkingSpot);
-			throw new NullPointerException("Out time provided is incorrect:" + ticket.getOutTime().toString());
-		}
-	}
-
-	public void calculateFareBikeWithFutureInTime(Ticket ticket) {
-		if (ticket.getOutTime() == null || ticket.getOutTime().before(ticket.getInTime())) {
-			final Date outTime = new Date();
-			final ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-			ticket.setOutTime(outTime);
-			ticket.setParkingSpot(parkingSpot);
-			throw new NullPointerException("Out time provided is incorrect:" + ticket.getOutTime().toString());
-		}
-	}
-
-	public void calculateFareBike_shouldThroNullPointerException(Ticket ticket) {
-		if (ticket.getOutTime() == null || ticket.getOutTime().before(ticket.getInTime())) {
-			Date outTime = new Date();
-			outTime.setTime(0); // null out-time should generate an IllegalArgumentException
-			ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-			ticket.setOutTime(outTime);
-			ticket.setParkingSpot(parkingSpot);
-		}
-		throw new NullPointerException();
-	}
-
-	public void calculateFareCar_shouldThroNullPointerException(Ticket ticket) {
-		if (ticket.getOutTime() == null || ticket.getOutTime().before(ticket.getInTime())) {
-			Date outTime = new Date();
-			outTime.setTime(0); // null out-time should generate an IllegalArgumentException
-			ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-			ticket.setOutTime(outTime);
-			ticket.setParkingSpot(parkingSpot);
-		}
-		throw new NullPointerException();
-	}
-
-	public void processExitingVehicle(Ticket ticket) {
-		// TODO Auto-generated method stub
 	}
 
 }
