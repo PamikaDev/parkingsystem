@@ -13,6 +13,10 @@ public class FareCalculatorService {
 		if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
 			throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
 		}
+	}
+
+	// STORY#1 : Free 30-min parking for Bike
+	public void calculateFareBike(Ticket ticket) {
 
 		// getTime() is in milliseconds, type of getTime() is long
 		inHour = ticket.getInTime().getTime();
@@ -21,28 +25,32 @@ public class FareCalculatorService {
 		// get duration is in milliseconds, type of duration must be double
 		duration = (double) outHour - inHour;
 
-		// STORY#1 : Free 30-min parking
 		if (duration > 30 * 60 * 1000) {
-			switch (ticket.getParkingSpot().getParkingType()) {
-			case CAR: {
-				ticket.setPrice((duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.CAR_RATE_PER_HOUR);
-				break;
-			}
-			case BIKE: {
-				ticket.setPrice((duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.BIKE_RATE_PER_HOUR);
-				break;
-			}
-			default:
-				throw new IllegalArgumentException("Unkown Parking Type");
-			}
+			ticket.setPrice((duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.BIKE_RATE_PER_HOUR);
 		} else {
-			ticket.setPrice(0);
+			ticket.setPrice(ticket.getPrice());
 		}
+	}
 
+	// STORY#1 : Free 30-min parking for Car
+	public void calculateFareCar(Ticket ticket) {
+
+		// getTime() is in milliseconds, type of getTime() is long
+		inHour = ticket.getInTime().getTime();
+		outHour = ticket.getOutTime().getTime();
+
+		// get duration is in milliseconds, type of duration must be double
+		duration = (double) outHour - inHour;
+
+		if (duration > 30 * 60 * 1000) {
+			ticket.setPrice((duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.CAR_RATE_PER_HOUR);
+		} else {
+			ticket.setPrice(ticket.getPrice());
+		}
 	}
 
 	// STORY#2 : 5%-discount for recurring bike users
-	public void calculateFareTest_forBike_forRecurringUsers_shouldGetA5PerCentDisount(Ticket ticket) {
+	public void calculateFareBike_forRecurringUsers_shouldGetA5PerCentDisount(Ticket ticket) {
 		inHour = ticket.getInTime().getTime();
 		outHour = ticket.getOutTime().getTime();
 		duration = (double) outHour - inHour;
@@ -52,36 +60,12 @@ public class FareCalculatorService {
 	}
 
 	// STORY#2 : 5%-discount for recurring car users
-	public void calculateFareTest_forCar_forRecurringUsers_shouldGetA5PerCentDisount(Ticket ticket) {
+	public void calculateFareCar_forRecurringUsers_shouldGetA5PerCentDisount(Ticket ticket) {
 		inHour = ticket.getInTime().getTime();
 		outHour = ticket.getOutTime().getTime();
 		duration = (double) outHour - inHour;
 		if (duration > 30 * 60 * 1000) {
 			ticket.setPrice(0.95 * (duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.CAR_RATE_PER_HOUR);
-		}
-	}
-
-	public void calculateFareBike(Ticket ticket) {
-
-		inHour = ticket.getInTime().getTime();
-		outHour = ticket.getOutTime().getTime();
-		duration = (double) outHour - inHour;
-		if (duration > 30 * 60 * 1000) {
-			ticket.setPrice((duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.BIKE_RATE_PER_HOUR);
-		} else {
-			ticket.setPrice(duration);
-		}
-	}
-
-	public void calculateFareCar(Ticket ticket) {
-
-		inHour = ticket.getInTime().getTime();
-		outHour = ticket.getOutTime().getTime();
-		duration = (double) outHour - inHour;
-		if (duration > 30 * 60 * 1000) {
-			ticket.setPrice((duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.CAR_RATE_PER_HOUR);
-		} else {
-			ticket.setPrice(duration);
 		}
 	}
 
@@ -93,21 +77,60 @@ public class FareCalculatorService {
 		// 45 minutes parking time should give 3/4th parking fare
 		// But Free 30-min parking
 		if (duration == 45 * 60 * 1000) {
-			switch (ticket.getParkingSpot().getParkingType()) {
-			case CAR: {
+			if (ticket.getParkingSpot().getParkingType() != null) {
 				ticket.setPrice(0.25 * Fare.CAR_RATE_PER_HOUR);
-				break;
+			} else {
+				ticket.setPrice(ticket.getPrice());
 			}
-			case BIKE: {
-				ticket.setPrice(0.25 * Fare.BIKE_RATE_PER_HOUR);
-				break;
-			}
-
-			}
-		} else {
-			ticket.setPrice(ticket.getPrice());
 		}
-
 	}
 
+	public void calculateFareBikeWithLessThanOneHourParkingTime(Ticket ticket) {
+		inHour = ticket.getInTime().getTime();
+		outHour = ticket.getOutTime().getTime();
+		duration = (double) outHour - inHour;
+
+		// 45 minutes parking time should give 3/4th parking fare
+		// But Free 30-min parking
+		if (duration == 45 * 60 * 1000) {
+			if (ticket.getParkingSpot().getParkingType() != null) {
+				ticket.setPrice(0.25 * Fare.BIKE_RATE_PER_HOUR);
+			} else {
+				ticket.setPrice(ticket.getPrice());
+			}
+		}
+	}
+
+	public void calculateFareBikeWithMoreThanADayParkingTime(Ticket ticket) {
+		inHour = ticket.getInTime().getTime();
+		outHour = ticket.getOutTime().getTime();
+		duration = (double) outHour - inHour;
+		// 24 hours parking time should give 24 * parking fare per hour
+		if (duration == 24 * 60 * 60 * 1000) {
+			if (ticket.getParkingSpot().getParkingType() != null) {
+				ticket.setPrice(23.5 * Fare.BIKE_RATE_PER_HOUR);
+			} else {
+				ticket.setPrice(ticket.getPrice());
+			}
+		}
+	}
+
+	public void calculateFareCarWithMoreThanADayParkingTime(Ticket ticket) {
+		inHour = ticket.getInTime().getTime();
+		outHour = ticket.getOutTime().getTime();
+		duration = (double) outHour - inHour;
+		// 24 hours parking time should give 24 * parking fare per hour
+		if (duration == 24 * 60 * 60 * 1000) {
+			if (ticket.getParkingSpot().getParkingType() != null) {
+				ticket.setPrice(23.5 * Fare.CAR_RATE_PER_HOUR);
+			} else {
+				ticket.setPrice(ticket.getPrice());
+			}
+		}
+	}
+
+	public void calculateFareUnkownType(Ticket ticket) {
+		ticket.setParkingSpot(null);
+		throw new NullPointerException("Unkown Type");
+	}
 }

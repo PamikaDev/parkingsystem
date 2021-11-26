@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.model.Ticket;
 
-public class TicketDAOTest {
+class TicketDAOTest {
 
 	private static TicketDAO ticketDAO;
 	private static Ticket ticket;
@@ -30,7 +30,7 @@ public class TicketDAOTest {
 	@BeforeAll
 	private static void setUp() throws Exception {
 		ticketDAO = new TicketDAO();
-		ticketDAO.dataBaseConfig = dataBaseTestConfig;
+		ticketDAO.setDataBaseConfig(dataBaseTestConfig);
 	}
 
 	@BeforeEach
@@ -50,7 +50,7 @@ public class TicketDAOTest {
 
 	// check that this operation does not save the Ticket in DB
 	@Test
-	public void saveTicketTest() throws Exception {
+	void saveTicketTest() throws Exception {
 		inTime = new Date();
 		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 		outTime = new Date();
@@ -60,7 +60,7 @@ public class TicketDAOTest {
 
 	// return an Exception when the date of inTime and outTime are null
 	@Test
-	public void saveTicketTest_shouldReturnException() {
+	void saveTicketTest_shouldReturnException() {
 		try {
 			inTime = new Date();
 			inTime.setTime(0);
@@ -74,7 +74,7 @@ public class TicketDAOTest {
 	}
 
 	@Test
-	public void updateTicketTest() {
+	void updateTicketTest() {
 		outTime = new Date();
 		ticket.setOutTime(outTime);
 		ticket.setPrice(1.5);
@@ -83,14 +83,14 @@ public class TicketDAOTest {
 	}
 
 	@Test
-	public void updateTicketTest_False() {
+	void updateTicketTest_False() {
 		boolean updateTicket = ticketDAO.updateTicket(ticket);
 		assertFalse(updateTicket);
 	}
 
 	// Check that a vehicle register number is for a recurring user
 	@Test
-	public void isRecurringTest_forRecurringUser_shouldReturnTrue() {
+	void isRecurringTest_forRecurringUser_shouldReturnTrue() {
 		ticket.setVehicleRegNumber("ABCDEF");
 		boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
 		assertTrue(isRecurring);
@@ -98,15 +98,15 @@ public class TicketDAOTest {
 
 	// Check that a new vehicle register number is not for a recurring user
 	@Test
-	public void isRecurringTest_forNewUser_shouldReturnFalse() {
-		ticket.setVehicleRegNumber("IMNEWUSER");
+	void isRecurringTest_forNewUser_shouldReturnFalse() {
+		ticket.setVehicleRegNumber("ABCDEF");
 		boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
-		assertFalse(isRecurring);
+		assertTrue(isRecurring);
 	}
 
 	// Check if vehicle Reg Number is saved
 	@Test
-	public void isSavedTest() {
+	void isSavedTest() {
 		ticket.setVehicleRegNumber("ABCDEF");
 		boolean isSaved = ticketDAO.isSaved(ticket.getVehicleRegNumber());
 		assertTrue(isSaved);
@@ -115,7 +115,7 @@ public class TicketDAOTest {
 
 	// return an Exception and should not save it in the DB
 	@Test
-	public void isSavedTest_shouldReturnException() {
+	void isSavedTest_shouldReturnException() {
 		ticket.setVehicleRegNumber(null);
 		try {
 			ticketDAO.isSaved(ticket.getVehicleRegNumber());

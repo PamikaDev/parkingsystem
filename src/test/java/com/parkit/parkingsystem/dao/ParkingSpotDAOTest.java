@@ -29,7 +29,7 @@ class ParkingSpotDAOTest {
 	@BeforeAll
 	public static void setUp() throws Exception {
 		parkingSpotDAOUnderTest = new ParkingSpotDAO();
-		parkingSpotDAOUnderTest.dataBaseConfig = dataBaseTestConfig;
+		parkingSpotDAOUnderTest.setDataBaseConfig(dataBaseTestConfig);
 	}
 
 	@BeforeEach
@@ -63,7 +63,7 @@ class ParkingSpotDAOTest {
 	void getNextAvailableSlotTest_BIKE() {
 		parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
 		int parkingId = parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType());
-		assertThat(parkingId).isEqualTo(parkingId);
+		assertThat(parkingId).isEqualTo(parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType()));
 	}
 
 	@Test

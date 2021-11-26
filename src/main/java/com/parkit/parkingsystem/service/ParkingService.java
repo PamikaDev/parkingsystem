@@ -16,8 +16,6 @@ public class ParkingService {
 
 	private static final Logger logger = LogManager.getLogger("ParkingService");
 
-	private static FareCalculatorService fareCalculatorService = new FareCalculatorService();
-
 	private InputReaderUtil inputReaderUtil;
 	private ParkingSpotDAO parkingSpotDAO;
 	private TicketDAO ticketDAO;
@@ -57,7 +55,7 @@ public class ParkingService {
 				ticket.setInTime(inTime);
 				ticket.setOutTime(null);
 				ticketDAO.saveTicket(ticket);
-				System.out.println("Generated Ticket and saved in DB");
+				logger.info("Generated Ticket and saved in DB");
 				System.out.println("Please park your vehicle in spot number:" + parkingSpot.getId());
 				System.out.println("Recorded in-time for vehicle number:" + vehicleRegNumber + " is:" + inTime);
 			}
@@ -71,26 +69,22 @@ public class ParkingService {
 		return inputReaderUtil.readVehicleRegistrationNumber();
 	}
 
-	public ParkingSpot getNextParkingNumberIfAvailable() {
+	public ParkingSpot getNextParkingNumberIfAvailable() throws IllegalArgumentException {
 		int parkingNumber = 0;
 		ParkingSpot parkingSpot = null;
-		try {
-			ParkingType parkingType = getVehichleType();
-			parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);
-			if (parkingNumber > 0) {
-				parkingSpot = new ParkingSpot(parkingNumber, parkingType, true);
-			} else {
-				throw new Exception("Error fetching parking number from DB. Parking slots might be full");
-			}
-		} catch (IllegalArgumentException ie) {
-			logger.error("Error parsing user input for type of vehicle", ie);
-		} catch (Exception e) {
-			logger.error("Error fetching next available parking slot", e);
+		ParkingType parkingType = getVehichleType();
+		parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);
+		if (parkingNumber > 0) {
+			parkingSpot = new ParkingSpot(parkingNumber, parkingType, true);
+		} else {
+			throw new IllegalArgumentException(
+					"Error fetching parking number from DB. Parking slots might be full");
 		}
+
 		return parkingSpot;
 	}
 
-	public ParkingType getVehichleType() {
+	public ParkingType getVehichleType() throws IllegalArgumentException {
 		System.out.println("Please select vehicle type from menu");
 		System.out.println("1 CAR");
 		System.out.println("2 BIKE");
@@ -104,10 +98,11 @@ public class ParkingService {
 			return ParkingType.BIKE;
 		}
 		default: {
-			System.out.println("Incorrect input provided");
-			throw new IllegalArgumentException("Entered input is invalid");
+			logger.info("Incorrect input provided");
 		}
+
 		}
+		throw new IllegalArgumentException("Entered input is invalid");
 	}
 
 	public void processExitingVehicle() {
@@ -116,7 +111,6 @@ public class ParkingService {
 			Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
 			Date outTime = new Date();
 			ticket.setOutTime(outTime);
-			fareCalculatorService.calculateFare(ticket);
 
 			// for a recurring user
 			if (isRecurring) {
@@ -131,7 +125,7 @@ public class ParkingService {
 				System.out.println(
 						"Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:" + outTime);
 			} else {
-				System.out.println("Unable to update ticket information. Error occurred");
+				logger.error("Unable to update ticket information. Error occurred");
 			}
 		} catch (Exception e) {
 			logger.error("Unable to process exiting vehicle", e);

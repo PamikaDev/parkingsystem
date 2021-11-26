@@ -26,7 +26,7 @@ import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 
 @ExtendWith(MockitoExtension.class)
-public class ParkingDataBaseIT {
+class ParkingDataBaseIT {
 
 	private static ParkingSpot parkingSpot;
 	private static Ticket ticket;
@@ -42,9 +42,9 @@ public class ParkingDataBaseIT {
 	@BeforeAll
 	private static void setUp() throws Exception {
 		parkingSpotDAO = new ParkingSpotDAO();
-		parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
+		parkingSpotDAO.setDataBaseConfig(dataBaseTestConfig);
 		ticketDAO = new TicketDAO();
-		ticketDAO.dataBaseConfig = dataBaseTestConfig;
+		ticketDAO.setDataBaseConfig(dataBaseTestConfig);
 		dataBasePrepareService = new DataBasePrepareService();
 		ticket = new Ticket();
 		parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
@@ -63,7 +63,7 @@ public class ParkingDataBaseIT {
 	}
 
 	@Test
-	public void testParkingACar() {
+	void testParkingACar() {
 
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 		parkingService.processIncomingVehicle();
@@ -78,7 +78,7 @@ public class ParkingDataBaseIT {
 	}
 
 	@Test
-	public void testParkingLotExit() {
+	void testParkingLotExit() {
 		testParkingACar();
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 

@@ -54,7 +54,7 @@ class ParkingServiceTest {
 	}
 
 	@Test
-	public void processIncomingVehicleTest() throws Exception {
+	void processIncomingVehicleTest() throws Exception {
 
 		ParkingSpot parkingSpot = new ParkingSpot(0, null, false);
 		parkingSpotDAO.updateParking(parkingSpot);
@@ -81,7 +81,7 @@ class ParkingServiceTest {
 		parkingServiceUnderTest.getVehichleRegNumber();
 
 		verify(inputReaderUtil, atLeast(1)).readVehicleRegistrationNumber();
-		assertThat("ABCDEF").isEqualTo(ticket.getVehicleRegNumber());
+		assertThat(ticket.getVehicleRegNumber()).isEqualTo("ABCDEF");
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class ParkingServiceTest {
 	}
 
 	@Test
-	public void getVehichleTypeTest() {
+	void getVehichleTypeTest() {
 
 		try {
 			when(inputReaderUtil.readSelection()).thenReturn(1);
@@ -117,7 +117,7 @@ class ParkingServiceTest {
 	// Testing process exiting vehicle should update Ticket and Parking and set a
 	// parking spot as available
 	@Test
-	public void processExitingVehicleTest() throws Exception {
+	void processExitingVehicleTest() throws Exception {
 
 		ParkingSpot parkingSpot = new ParkingSpot(0, null, false);
 		parkingSpotDAO.updateParking(parkingSpot);

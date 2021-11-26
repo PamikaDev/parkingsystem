@@ -39,7 +39,7 @@ public class InteractiveShell {
 				break;
 			}
 			default:
-				System.out.println("Unsupported option. Please enter a number corresponding to the provided menu");
+				logger.info("Unsupported option. Please enter a number corresponding to the provided menu");
 			}
 		}
 	}
