@@ -11,8 +11,12 @@ public class FareCalculatorService {
 
   public void calculateFare(Ticket ticket) {
     if (ticket.getOutTime() == null || ticket.getOutTime().before(ticket.getInTime())) {
-      throw new IllegalArgumentException(
-          "Out time provided is incorrect:" + ticket.getOutTime().toString());
+      throw new IllegalArgumentException();
+//          "Out time provided is incorrect:" + ticket.getOutTime().toString());
+    }
+
+    if (ticket.getParkingSpot().getParkingType() != null) {
+
     }
   }
 
@@ -78,9 +82,9 @@ public class FareCalculatorService {
     // 45 minutes parking time should give 3/4th parking fare
     // But Free 30-min parking
     if (duration == 45 * 60 * 1000) {
-      if (ticket.getParkingSpot().getParkingType() != null) {
-        ticket.setPrice(0.25 * Fare.CAR_RATE_PER_HOUR);
-      }
+//      if (ticket.getParkingSpot().getParkingType() != null) {
+      ticket.setPrice(0.25 * Fare.CAR_RATE_PER_HOUR);
+//      }
 
     }
   }
@@ -93,9 +97,9 @@ public class FareCalculatorService {
     // 45 minutes parking time should give 3/4th parking fare
     // But Free 30-min parking
     if (duration == 45 * 60 * 1000) {
-      if (ticket.getParkingSpot().getParkingType() != null) {
-        ticket.setPrice(0.25 * Fare.BIKE_RATE_PER_HOUR);
-      }
+      // if (ticket.getParkingSpot().getParkingType() != null) {
+      ticket.setPrice(0.25 * Fare.BIKE_RATE_PER_HOUR);
+//      }
 
     }
   }
@@ -106,9 +110,9 @@ public class FareCalculatorService {
     duration = (double) outHour - inHour;
     // 24 hours parking time should give 24 * parking fare per hour
     if (duration == 24 * 60 * 60 * 1000) {
-      if (ticket.getParkingSpot().getParkingType() != null) {
-        ticket.setPrice(23.5 * Fare.BIKE_RATE_PER_HOUR);
-      }
+//      if (ticket.getParkingSpot().getParkingType() != null) {
+      ticket.setPrice(23.5 * Fare.BIKE_RATE_PER_HOUR);
+//      }
     }
   }
 
@@ -118,9 +122,9 @@ public class FareCalculatorService {
     duration = (double) outHour - inHour;
     // 24 hours parking time should give 24 * parking fare per hour
     if (duration == 24 * 60 * 60 * 1000) {
-      if (ticket.getParkingSpot().getParkingType() != null) {
-        ticket.setPrice(23.5 * Fare.CAR_RATE_PER_HOUR);
-      }
+//      if (ticket.getParkingSpot().getParkingType() != null) {
+      ticket.setPrice(23.5 * Fare.CAR_RATE_PER_HOUR);
+//      }
     }
   }
 

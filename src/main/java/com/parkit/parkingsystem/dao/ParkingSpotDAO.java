@@ -1,6 +1,5 @@
 package com.parkit.parkingsystem.dao;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,7 +27,7 @@ public class ParkingSpotDAO {
     this.dataBaseConfig = dataBaseConfig;
   }
 
-  public int getNextAvailableSlot(ParkingType parkingType) throws Exception, SQLException {
+  public int getNextAvailableSlot(ParkingType parkingType) throws Exception {
     int result = -1;
     try (Connection con = dataBaseConfig.getConnection();
         PreparedStatement ps = con.prepareStatement(DBConstants.GET_NEXT_PARKING_SPOT)) {
@@ -45,8 +44,7 @@ public class ParkingSpotDAO {
     return result;
   }
 
-  public boolean updateParking(ParkingSpot parkingSpot)
-      throws ClassNotFoundException, FileNotFoundException, IOException {
+  public boolean updateParking(ParkingSpot parkingSpot) throws ClassNotFoundException, IOException {
     try (Connection con = dataBaseConfig.getConnection();
         PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_PARKING_SPOT)) {
 

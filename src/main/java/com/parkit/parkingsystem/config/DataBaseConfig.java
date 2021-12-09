@@ -1,7 +1,6 @@
 package com.parkit.parkingsystem.config;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,8 +16,7 @@ public class DataBaseConfig {
 
   private static final Logger logger = LogManager.getLogger("DataBaseConfig");
 
-  public Connection getConnection()
-      throws SQLException, ClassNotFoundException, FileNotFoundException, IOException {
+  public Connection getConnection() throws SQLException, ClassNotFoundException, IOException {
     logger.info("Create DB connection");
 
     Properties props = new Properties();
@@ -31,8 +29,6 @@ public class DataBaseConfig {
     String login = props.getProperty("jdbc.login");
     String password = props.getProperty("jdbc.password");
 
-    try (Connection connection = DriverManager.getConnection(url, login, password)) {
-    }
     return DriverManager.getConnection(url, login, password);
 
   }
