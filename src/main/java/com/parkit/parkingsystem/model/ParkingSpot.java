@@ -39,11 +39,13 @@ public class ParkingSpot {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (o == null || getClass() != o.getClass())
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
-		ParkingSpot that = (ParkingSpot) o;
+		}
+		final ParkingSpot that = (ParkingSpot) o;
 		return number == that.number;
 	}
 

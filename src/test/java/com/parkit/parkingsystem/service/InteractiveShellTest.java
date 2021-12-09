@@ -4,8 +4,8 @@
 //
 //import java.util.Date;
 //
-//import org.junit.jupiter.api.AfterEach;
-//import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.AfterAll;
+//import org.junit.jupiter.api.BeforeAll;
 //import org.junit.jupiter.api.Test;
 //
 //import com.parkit.parkingsystem.model.ParkingSpot;
@@ -13,17 +13,17 @@
 //
 //class InteractiveShellTest {
 //
-////	private InteractiveShell interactiveShellUnderTest;
+//	private static InteractiveShell interactiveShellUnderTest;
 //	private ParkingSpot parkingSpot;
 //
-//	@BeforeEach
-//	void setUp() throws Exception {
-////		interactiveShellUnderTest = new InteractiveShell();
+//	@BeforeAll
+//	private static void setUp() {
+//		interactiveShellUnderTest = new InteractiveShell();
 //	}
 //
-//	@AfterEach
-//	void tearDown() throws Exception {
-////		interactiveShellUnderTest = null;
+//	@AfterAll
+//	public static void tearDown() {
+//		interactiveShellUnderTest = null;
 //	}
 //
 //	@Test
@@ -39,7 +39,7 @@
 //		ticket.setPrice(ticket.getPrice());
 //
 //		// WHEN
-////		interactiveShellUnderTest.loadInterface();
+//		interactiveShellUnderTest.loadInterface();
 //
 //		// THEN
 //		assertTrue(continueApp);

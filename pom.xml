@@ -18,7 +18,6 @@
 		<sonar.dependencyCheck.reportPath>${dependency.check.report.dir}/dependency-check-report.xml</sonar.dependencyCheck.reportPath>
 		<sonar.dependencyCheck.htmlReportPath>${dependency.check.report.dir}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -107,7 +106,7 @@
 			<artifactId>maven-scm-provider-cvsexe</artifactId>
 			<version>1.12.0</version>
 		</dependency>
-		<dependency>
+ 		<dependency>
 			<groupId>com.vladsch.flexmark</groupId>
 			<artifactId>flexmark-formatter</artifactId>
 			<version>0.50.50</version>

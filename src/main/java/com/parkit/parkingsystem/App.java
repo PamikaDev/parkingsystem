@@ -1,15 +1,18 @@
 package com.parkit.parkingsystem;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.parkit.parkingsystem.service.InteractiveShell;
 
 public class App {
-	private static final Logger logger = LogManager.getLogger("App");
+  private static final Logger logger = LogManager.getLogger("App");
 
-	public static void main(String[] args) {
-		logger.info("Initializing Parking System");
-		InteractiveShell.loadInterface();
-	}
+  public static void main(String[] args) throws FileNotFoundException, IOException {
+    logger.info("Initializing Parking System");
+    InteractiveShell.loadInterface();
+  }
 }
