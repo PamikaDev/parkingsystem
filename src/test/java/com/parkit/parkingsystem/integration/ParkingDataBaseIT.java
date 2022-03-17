@@ -24,6 +24,7 @@ import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
+import com.parkit.parkingsystem.service.FareCalculatorService;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 
@@ -37,9 +38,12 @@ class ParkingDataBaseIT {
   private static ParkingSpotDAO parkingSpotDAO;
   private static TicketDAO ticketDAO;
   private static DataBasePrepareService dataBasePrepareService;
+  private static FareCalculatorService fareCalculatorService;
 
   @Mock
   private static InputReaderUtil inputReaderUtil;
+//  @Mock
+  // private static FareCalculatorService fareCalculatorService;
 
   @BeforeAll
   private static void setUp() throws Exception {
@@ -68,14 +72,14 @@ class ParkingDataBaseIT {
   void testParkingACar() {
 
     final ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO,
-        ticketDAO);
+        ticketDAO, fareCalculatorService);
     parkingService.processIncomingVehicle();
 
-    // Check that a ticket is actually saved in DB.
+    // TODO2 Check that a ticket is actually saved in DB.
     final boolean saved = ticketDAO.isSaved("ABCDEF");
     assertTrue(saved);
 
-    // Check thhat Parking table is updated with availability
+    // TODO2 Check that Parking table is updated with availability
     final boolean available = parkingSpot.isAvailable();
     assertFalse(available);
   }
@@ -84,14 +88,13 @@ class ParkingDataBaseIT {
   void testParkingLotExit() throws FileNotFoundException, IOException {
     testParkingACar();
     final ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO,
-        ticketDAO);
+        ticketDAO, fareCalculatorService);
 
     parkingService.processExitingVehicle();
     final Date date = new Date();
     final Date outTime = new Date();
 
-    // Check that the fare generated and out time are populated correctly in the
-    // database
+    // TODO2 Check that the fare generated and out time are populated correctly in the database
     final double faregenerated = ticket.getPrice();
     ticket.setOutTime(outTime);
     final Date generatedTime = ticket.getOutTime();

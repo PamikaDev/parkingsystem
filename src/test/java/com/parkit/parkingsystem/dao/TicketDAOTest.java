@@ -8,12 +8,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
+import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 
 class TicketDAOTest {
@@ -22,9 +25,12 @@ class TicketDAOTest {
   private static Ticket ticket;
   private static Date inTime;
   private static Date outTime;
+  private static ParkingSpot parkingSpot;
 
   public static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
   Connection con = null;
+
+  private static final Logger logger = LogManager.getLogger("TicketDAOTest");
 
   @BeforeAll
   private static void setUp() {
@@ -33,37 +39,48 @@ class TicketDAOTest {
   }
 
   @BeforeEach
-  public void setUpPerTest() throws ClassNotFoundException, SQLException, IOException {
+  public void setUpPerTest() {
     ticket = new Ticket();
-    con = dataBaseTestConfig.getConnection();
+    try {
+      con = dataBaseTestConfig.getConnection();
+    } catch (Exception ex) {
+      logger.error("Error connecting to data base", ex);
+
+    }
   }
 
   @AfterEach
   private void tearDownPerTest() {
-    dataBaseTestConfig.closeConnection(null);
+    dataBaseTestConfig.closeConnection(con);
   }
 
-  // check that this operation does not save the Ticket in DB
   @Test
   void saveTicketTest() throws Exception {
     inTime = new Date();
-    inTime.setTime(System.currentTimeMillis() - 60 * 60 * 1000);
+    inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
     outTime = new Date();
     boolean saveTicket = ticketDAO.saveTicket(ticket);
     assertFalse(saveTicket);
   }
 
   @Test
-  void updateTicketTest() {
-    outTime = new Date();
-    ticket.setOutTime(outTime);
-    ticket.setPrice(1.5);
-    boolean updateTicket = ticketDAO.updateTicket(ticket);
-    assertTrue(updateTicket);
+  void getTicketTest() throws ClassNotFoundException, SQLException, IOException {
+    String str = "ABCDEF";
+
+    // GIVEN
+    ticket.setParkingSpot(parkingSpot);
+    ticket.setVehicleRegNumber(str);
+
+    // WHEN
+    boolean getTicket = ticketDAO.getTicket(str) != null;
+
+    // THEN
+    assertTrue(getTicket);
+
   }
 
   @Test
-  void updateTicketTest_False() {
+  void updateTicketTest() {
     outTime = new Date();
     ticket.setOutTime(outTime);
     ticket.setPrice(1.5);
@@ -87,16 +104,4 @@ class TicketDAOTest {
     assertTrue(isSaved);
   }
 
-  // return an Exception and should not save it in the DB
-  @Test
-  void isSavedTest_shouldReturnException() {
-    ticket.setVehicleRegNumber(null);
-    try {
-      ticketDAO.isSaved(ticket.getVehicleRegNumber());
-
-    } catch (final IllegalArgumentException e) {
-    }
-    assertFalse(ticketDAO.isSaved(ticket.getVehicleRegNumber()));
-
-  }
 }

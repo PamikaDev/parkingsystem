@@ -16,6 +16,7 @@ public class InteractiveShell {
 //  }
 
   private static final Logger logger = LogManager.getLogger("InteractiveShell");
+  private static FareCalculatorService fareCalculatorService;
 
   public static void loadInterface() throws IOException {
     logger.info("App initialized!!!");
@@ -25,7 +26,8 @@ public class InteractiveShell {
     InputReaderUtil inputReaderUtil = new InputReaderUtil();
     ParkingSpotDAO parkingSpotDAO = new ParkingSpotDAO();
     TicketDAO ticketDAO = new TicketDAO();
-    ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+    ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO,
+        fareCalculatorService);
 
     while (continueApp) {
       loadMenu();

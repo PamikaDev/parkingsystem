@@ -30,7 +30,7 @@ import com.parkit.parkingsystem.util.InputReaderUtil;
 @ExtendWith(MockitoExtension.class)
 class ParkingServiceTest {
 
-  private ParkingService parkingServiceUnderTest;
+  private ParkingService parkingServiceTest;
 
   @Mock
   private static InputReaderUtil inputReaderUtil;
@@ -38,12 +38,15 @@ class ParkingServiceTest {
   private static ParkingSpotDAO parkingSpotDAO;
   @Mock
   private static TicketDAO ticketDAO;
+  @Mock
+  private static FareCalculatorService fareCalculatorService;
 
   private Ticket ticket;
 
   @BeforeEach
   private void setUpPerTest() {
-    parkingServiceUnderTest = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+    parkingServiceTest = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO,
+        fareCalculatorService);
     ticket = new Ticket();
     ticket.setInTime(new Date(System.currentTimeMillis() - 60 * 60 * 1000));
     ticket.setVehicleRegNumber("ABCDEF");
@@ -51,7 +54,7 @@ class ParkingServiceTest {
 
   @AfterEach
   public void tearDownPerTest() {
-    parkingServiceUnderTest = null;
+    parkingServiceTest = null;
   }
 
   @Test
@@ -65,7 +68,7 @@ class ParkingServiceTest {
     ticket.setOutTime(null);
     ticketDAO.saveTicket(ticket);
 
-    parkingServiceUnderTest.processIncomingVehicle();
+    parkingServiceTest.processIncomingVehicle();
 
     verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
     verify(ticketDAO, Mockito.times(1)).saveTicket(any(Ticket.class));
@@ -79,7 +82,7 @@ class ParkingServiceTest {
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
 
     ticket.setVehicleRegNumber(inputReaderUtil.readVehicleRegistrationNumber());
-    parkingServiceUnderTest.getVehichleRegNumber();
+    parkingServiceTest.getVehichleRegNumber();
 
     verify(inputReaderUtil, atLeast(1)).readVehicleRegistrationNumber();
     assertThat(ticket.getVehicleRegNumber()).isEqualTo("ABCDEF");
@@ -92,7 +95,7 @@ class ParkingServiceTest {
     when(inputReaderUtil.readSelection()).thenReturn(1);
     when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(2);
 
-    parkingServiceUnderTest.getNextParkingNumberIfAvailable();
+    parkingServiceTest.getNextParkingNumberIfAvailable();
 
     verify(parkingSpotDAO, times(1)).getNextAvailableSlot(any(ParkingType.class));
     assertFalse(parkingSpot.isAvailable());
@@ -103,12 +106,12 @@ class ParkingServiceTest {
 
     try {
       when(inputReaderUtil.readSelection()).thenReturn(1);
-      parkingServiceUnderTest.getVehichleType();
-      assertThat(parkingServiceUnderTest.getVehichleType()).isEqualTo(ParkingType.CAR);
+      parkingServiceTest.getVehichleType();
+      assertThat(parkingServiceTest.getVehichleType()).isEqualTo(ParkingType.CAR);
 
       when(inputReaderUtil.readSelection()).thenReturn(2);
-      parkingServiceUnderTest.getVehichleType();
-      assertThat(parkingServiceUnderTest.getVehichleType()).isEqualTo(ParkingType.BIKE);
+      parkingServiceTest.getVehichleType();
+      assertThat(parkingServiceTest.getVehichleType()).isEqualTo(ParkingType.BIKE);
 
     } catch (final Exception e) {
       assertTrue(e instanceof IllegalArgumentException);
@@ -129,7 +132,7 @@ class ParkingServiceTest {
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
     when(ticketDAO.getTicket(any())).thenReturn(ticket);
 
-    parkingServiceUnderTest.processExitingVehicle();
+    parkingServiceTest.processExitingVehicle();
 
     verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
     assertFalse(parkingSpot.isAvailable());
