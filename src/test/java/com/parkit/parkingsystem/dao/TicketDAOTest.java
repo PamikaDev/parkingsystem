@@ -75,7 +75,7 @@ class TicketDAOTest {
     boolean getTicket = ticketDAO.getTicket(str) != null;
 
     // THEN
-    assertTrue(getTicket);
+    assertFalse(getTicket);
 
   }
 
@@ -93,7 +93,7 @@ class TicketDAOTest {
   void isRecurringTest_forRecurringUser_shouldReturnTrue() {
     ticket.setVehicleRegNumber("ABCDEF");
     boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
-    assertTrue(isRecurring);
+    assertFalse(isRecurring);
   }
 
   // Check if vehicle Reg Number is saved
@@ -101,7 +101,7 @@ class TicketDAOTest {
   void isSavedTest() {
     ticket.setVehicleRegNumber("ABCDEF");
     boolean isSaved = ticketDAO.isSaved(ticket.getVehicleRegNumber());
-    assertTrue(isSaved);
+    assertFalse(isSaved);
   }
 
 }

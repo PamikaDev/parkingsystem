@@ -45,8 +45,7 @@ class ParkingServiceTest {
 
   @BeforeEach
   private void setUpPerTest() {
-    parkingServiceTest = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO,
-        fareCalculatorService);
+    parkingServiceTest = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
     ticket = new Ticket();
     ticket.setInTime(new Date(System.currentTimeMillis() - 60 * 60 * 1000));
     ticket.setVehicleRegNumber("ABCDEF");

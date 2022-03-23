@@ -10,7 +10,7 @@ import com.parkit.parkingsystem.service.InteractiveShell;
 public class App {
   private static final Logger logger = LogManager.getLogger("App");
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String args[]) throws IOException {
     logger.info("Initializing Parking System");
     InteractiveShell.loadInterface();
   }

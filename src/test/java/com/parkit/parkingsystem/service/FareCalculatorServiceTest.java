@@ -40,7 +40,7 @@ class FareCalculatorServiceTest {
 
   @BeforeEach
   private void setUpPerTest() {
-    fareCalculatorServiceTest = new FareCalculatorService(ticketDAO);
+    fareCalculatorServiceTest = new FareCalculatorService();
     ticket = new Ticket();
   }
 
@@ -107,16 +107,14 @@ class FareCalculatorServiceTest {
       "calculateFareBike_shouldThrowIllegalArgumentException_WithNullOutTime",
       "calculateFareBikeWithFutureInTime" })
   void calculateFareBike_shouldThroNullPointerException(String arg) {
-    assertThrows(IllegalArgumentException.class,
-        () -> fareCalculatorServiceTest.calculateFare(ticket));
+    assertThrows(NullPointerException.class, () -> fareCalculatorServiceTest.calculateFare(ticket));
   }
 
   @ParameterizedTest(name = "{0} donne une IllegalArgumentException") @ValueSource(strings = {
       "calculateFareCar_shouldThrowIllegalArgumentException_WithNullOutTime",
       "calculateFareCarWithFutureInTime" })
   void calculateFareCar_shouldThroNullPointerException(String arg) {
-    assertThrows(IllegalArgumentException.class,
-        () -> fareCalculatorServiceTest.calculateFare(ticket));
+    assertThrows(NullPointerException.class, () -> fareCalculatorServiceTest.calculateFare(ticket));
   }
 
   @Test

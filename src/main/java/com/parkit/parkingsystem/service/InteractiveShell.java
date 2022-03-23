@@ -1,7 +1,5 @@
 package com.parkit.parkingsystem.service;
 
-import java.io.IOException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,14 +9,9 @@ import com.parkit.parkingsystem.util.InputReaderUtil;
 
 public class InteractiveShell {
 
-//  private InteractiveShell() {
-//    throw new IllegalStateException("Utility class");
-//  }
-
   private static final Logger logger = LogManager.getLogger("InteractiveShell");
-  private static FareCalculatorService fareCalculatorService;
 
-  public static void loadInterface() throws IOException {
+  public static void loadInterface() {
     logger.info("App initialized!!!");
     System.out.println("Welcome to Parking System!");
 
@@ -26,8 +19,7 @@ public class InteractiveShell {
     InputReaderUtil inputReaderUtil = new InputReaderUtil();
     ParkingSpotDAO parkingSpotDAO = new ParkingSpotDAO();
     TicketDAO ticketDAO = new TicketDAO();
-    ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO,
-        fareCalculatorService);
+    ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
     while (continueApp) {
       loadMenu();
@@ -47,7 +39,8 @@ public class InteractiveShell {
         break;
       }
       default:
-        logger.info("Unsupported option. Please enter a number corresponding to the provided menu");
+        System.out.println(
+            "Unsupported option. Please enter a number corresponding to the provided menu");
       }
     }
   }
