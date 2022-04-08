@@ -119,12 +119,6 @@ public class ParkingService {
       Date outTime = new Date();
       ticket.setOutTime(outTime);
       fareCalculatorService.calculateFare(ticket);
-
-      // for a recurring user
-      if (isRecurring) {
-        ticket.setPrice(ticket.getPrice() * 0.95);
-      }
-
       if (ticketDAO.updateTicket(ticket)) {
         ParkingSpot parkingSpot = ticket.getParkingSpot();
         parkingSpot.setAvailable(true);
