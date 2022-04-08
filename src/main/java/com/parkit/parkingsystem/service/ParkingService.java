@@ -43,10 +43,10 @@ public class ParkingService {
               "Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount. ");
         }
 
+        // Attribuez place de parking et marquez disponibilité fausse
+        // Allot this parking space and mark it's availability as false
         parkingSpot.setAvailable(false);
-        parkingSpotDAO.updateParking(parkingSpot);// allot this parking space and mark it's
-                                                  // availability as
-        // false
+        parkingSpotDAO.updateParking(parkingSpot);
 
         Date inTime = new Date();
         Ticket ticket = new Ticket();

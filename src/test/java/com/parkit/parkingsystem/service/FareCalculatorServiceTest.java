@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.Date;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,10 +45,10 @@ class FareCalculatorServiceTest {
     ticket = new Ticket();
   }
 
-//  @AfterEach
-//  public void tearDownPerTest() {
-  // fareCalculatorServiceTest = null;
-  // }
+  @AfterEach
+  public void tearDownPerTest() {
+    fareCalculatorServiceTest = null;
+  }
 
   @AfterAll
   public static void tearDown() {
@@ -67,7 +68,7 @@ class FareCalculatorServiceTest {
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
 
-    fareCalculatorServiceTest.calculateFareCar(ticket);
+    fareCalculatorServiceTest.calculateFare(ticket);
 
     assertThat(ticket.getPrice()).isEqualTo(Fare.CAR_RATE_PER_HOUR * 0.5);
   }
@@ -83,38 +84,9 @@ class FareCalculatorServiceTest {
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
 
-    fareCalculatorServiceTest.calculateFareBike(ticket);
+    fareCalculatorServiceTest.calculateFare(ticket);
 
     assertThat(ticket.getPrice()).isEqualTo(Fare.BIKE_RATE_PER_HOUR * 0.5);
-  }
-
-  @Test
-  void calculateFareUnkownType() {
-    final Date inTime = new Date();
-    inTime.setTime(System.currentTimeMillis() - 60 * 60 * 1000);
-    final Date outTime = new Date();
-    final ParkingSpot parkingSpot = new ParkingSpot(1, null, false);
-
-    ticket.setInTime(inTime);
-    ticket.setOutTime(outTime);
-    ticket.setParkingSpot(parkingSpot);
-
-    assertThrows(NullPointerException.class,
-        () -> fareCalculatorServiceTest.calculateFareUnkownType(ticket));
-  }
-
-  @ParameterizedTest(name = "{0} donne une IllegalArgumentException") @ValueSource(strings = {
-      "calculateFareBike_shouldThrowIllegalArgumentException_WithNullOutTime",
-      "calculateFareBikeWithFutureInTime" })
-  void calculateFareBike_shouldThroNullPointerException(String arg) {
-    assertThrows(NullPointerException.class, () -> fareCalculatorServiceTest.calculateFare(ticket));
-  }
-
-  @ParameterizedTest(name = "{0} donne une IllegalArgumentException") @ValueSource(strings = {
-      "calculateFareCar_shouldThrowIllegalArgumentException_WithNullOutTime",
-      "calculateFareCarWithFutureInTime" })
-  void calculateFareCar_shouldThroNullPointerException(String arg) {
-    assertThrows(NullPointerException.class, () -> fareCalculatorServiceTest.calculateFare(ticket));
   }
 
   @Test
@@ -264,6 +236,35 @@ class FareCalculatorServiceTest {
 
     assertThat(ticket.getPrice()).isEqualTo(Fare.BIKE_RATE_PER_HOUR * 0.95 * 0.5);
 
+  }
+
+  @Test
+  void calculateFareUnkownType() {
+    final Date inTime = new Date();
+    inTime.setTime(System.currentTimeMillis() - 60 * 60 * 1000);
+    final Date outTime = new Date();
+    final ParkingSpot parkingSpot = new ParkingSpot(1, null, false);
+
+    ticket.setInTime(inTime);
+    ticket.setOutTime(outTime);
+    ticket.setParkingSpot(parkingSpot);
+
+    assertThrows(NullPointerException.class,
+        () -> fareCalculatorServiceTest.calculateFareUnkownType(ticket));
+  }
+
+  @ParameterizedTest(name = "{0} donne une IllegalArgumentException") @ValueSource(strings = {
+      "calculateFareBike_shouldThrowIllegalArgumentException_WithNullOutTime",
+      "calculateFareBikeWithFutureInTime" })
+  void calculateFareBike_shouldThroNullPointerException(String arg) {
+    assertThrows(NullPointerException.class, () -> fareCalculatorServiceTest.calculateFare(ticket));
+  }
+
+  @ParameterizedTest(name = "{0} donne une IllegalArgumentException") @ValueSource(strings = {
+      "calculateFareCar_shouldThrowIllegalArgumentException_WithNullOutTime",
+      "calculateFareCarWithFutureInTime" })
+  void calculateFareCar_shouldThroNullPointerException(String arg) {
+    assertThrows(NullPointerException.class, () -> fareCalculatorServiceTest.calculateFare(ticket));
   }
 
 }

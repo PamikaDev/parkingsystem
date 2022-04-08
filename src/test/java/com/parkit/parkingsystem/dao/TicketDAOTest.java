@@ -80,7 +80,7 @@ class TicketDAOTest {
   }
 
   @Test
-  void updateTicketTest() {
+  void updateTicketTest() throws ClassNotFoundException, SQLException {
     outTime = new Date();
     ticket.setOutTime(outTime);
     ticket.setPrice(1.5);
@@ -90,7 +90,8 @@ class TicketDAOTest {
 
   // Check that a vehicle register number is for a recurring user
   @Test
-  void isRecurringTest_forRecurringUser_shouldReturnTrue() {
+  void isRecurringTest_forRecurringUser_shouldReturnTrue()
+      throws ClassNotFoundException, SQLException {
     ticket.setVehicleRegNumber("ABCDEF");
     boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
     assertFalse(isRecurring);
