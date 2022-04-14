@@ -84,7 +84,7 @@
 		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-site-plugin</artifactId>
-			<version>3.9.1</version>
+			<version>3.11.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
@@ -102,11 +102,16 @@
 			<version>3.1.2</version>
 		</dependency>
 		<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>findbugs-maven-plugin</artifactId>
+			<version>3.0.5</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.maven.scm</groupId>
 			<artifactId>maven-scm-provider-cvsexe</artifactId>
 			<version>1.12.0</version>
 		</dependency>
- 		<dependency>
+		<dependency>
 			<groupId>com.vladsch.flexmark</groupId>
 			<artifactId>flexmark-formatter</artifactId>
 			<version>0.50.50</version>
@@ -208,7 +213,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.9.1</version>
+				<version>3.11.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -236,4 +241,32 @@
 			</plugin>
 		</plugins>
 	</build>
+	<reporting>
+		<!-- surefire maven reporting surefire -->
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>3.0.0-M6</version>
+			</plugin>
+
+			<!-- findbugs maven reporting findbugs -->
+
+			<!-- Jacoco maven reporting jacoco -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<!-- select non-aggregate reports -->
+							<report>report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+
+
+	</reporting>
 </project>
