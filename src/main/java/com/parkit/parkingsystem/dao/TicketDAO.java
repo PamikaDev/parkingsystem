@@ -19,6 +19,7 @@ import com.parkit.parkingsystem.model.Ticket;
 public class TicketDAO {
 
   private DataBaseConfig dataBaseConfig = new DataBaseConfig();
+  private Ticket ticket;
   private static final Logger logger = LogManager.getLogger("TicketDAO");
 
   public void setDataBaseConfig(DataBaseConfig dataBaseConfig) {
@@ -37,7 +38,7 @@ public class TicketDAO {
       ps.setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
       ps.setTimestamp(5,
           (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
-      return ps.execute();
+      ps.execute();
     } catch (Exception ex) {
       logger.error("Error fetching next available slot", ex);
     } finally {
@@ -49,7 +50,7 @@ public class TicketDAO {
 
   public Ticket getTicket(String vehicleRegNumber)
       throws ClassNotFoundException, SQLException, IOException {
-    Ticket ticket = null;
+    ticket = null;
     try (Connection con = dataBaseConfig.getConnection();
         PreparedStatement ps = con.prepareStatement(DBConstants.GET_TICKET)) {
       ps.setString(1, vehicleRegNumber);
@@ -119,5 +120,22 @@ public class TicketDAO {
       logger.error("Error saving vehicle Reg Number", ex);
     }
     return false;
+  }
+
+//check if vehicleRegNumber is already inside
+  public boolean vehicleInside(String vehicleRegNumber) {
+    try (Connection con = dataBaseConfig.getConnection();
+        PreparedStatement ps = con.prepareStatement(DBConstants.GET_INSIDE_VEHICLE)) {
+      ps.setString(1, vehicleRegNumber);
+      ResultSet rs = ps.executeQuery();
+      if (rs.next()) {
+        dataBaseConfig.closeResultSet(rs);
+        return true;
+      }
+    } catch (Exception ex) {
+      logger.error("Error checking vehicleRegNumber is already inside", ex);
+    }
+    return false;
+
   }
 }
