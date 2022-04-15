@@ -23,6 +23,7 @@ public class ParkingService {
   private TicketDAO ticketDAO;
   private boolean isRecurring = false;
   private boolean vehicleInside = false;
+  private boolean vehicleOutside = false;
 
   public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO,
       TicketDAO ticketDAO) {
@@ -125,6 +126,13 @@ public class ParkingService {
   public void processExitingVehicle() {
     try {
       String vehicleRegNumber = getVehichleRegNumber();
+      // TODO if (vehicleOutside) alors return
+      vehicleOutside = ticketDAO.vehicleOutside(vehicleRegNumber);
+      if (vehicleOutside) {
+        System.out.println("The vehicle is already outside");
+        return;
+      }
+
       Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
       Date outTime = new Date();
       ticket.setOutTime(outTime);
@@ -139,6 +147,7 @@ public class ParkingService {
       } else {
         System.out.println("Unable to update ticket information. Error occurred");
       }
+
     } catch (Exception e) {
       logger.error("Unable to process exiting vehicle", e);
     }

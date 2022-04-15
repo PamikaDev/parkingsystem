@@ -138,4 +138,19 @@ public class TicketDAO {
     return false;
 
   }
+
+  public boolean vehicleOutside(String vehicleRegNumber) {
+    try (Connection con = dataBaseConfig.getConnection();
+        PreparedStatement ps = con.prepareStatement(DBConstants.GET_OUTSIDE_VEHICLE)) {
+      ps.setString(1, vehicleRegNumber);
+      ResultSet rs = ps.executeQuery();
+      if (rs.next()) {
+        dataBaseConfig.closeResultSet(rs);
+        return true;
+      }
+    } catch (Exception ex) {
+      logger.error("Error checking vehicleRegNumber is already outside", ex);
+    }
+    return false;
+  }
 }

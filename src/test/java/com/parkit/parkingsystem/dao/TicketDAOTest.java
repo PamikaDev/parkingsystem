@@ -90,8 +90,7 @@ class TicketDAOTest {
 
   // Check that a vehicle register number is for a recurring user
   @Test
-  void isRecurringTest_forRecurringUser_shouldReturnTrue()
-      throws ClassNotFoundException, SQLException {
+  void isRecurringTest() throws ClassNotFoundException, SQLException {
     ticket.setVehicleRegNumber("ABCDEF");
     boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
     assertFalse(isRecurring);
@@ -103,6 +102,21 @@ class TicketDAOTest {
     ticket.setVehicleRegNumber("ABCDEF");
     boolean isSaved = ticketDAO.isSaved(ticket.getVehicleRegNumber());
     assertFalse(isSaved);
+  }
+
+  // Check if vehicle is inside
+  @Test
+  void vehicleInside() {
+    ticket.setOutTime(null);
+    boolean vehicleInside = ticketDAO.vehicleInside(null);
+    assertFalse(vehicleInside);
+  }
+
+  // Check if vehicle is outside
+  void vehicleOutside() {
+    ticket.setOutTime(outTime);
+    boolean vehicleOutside = ticketDAO.vehicleOutside(null);
+    assertFalse(vehicleOutside);
   }
 
 }

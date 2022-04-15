@@ -10,6 +10,7 @@ public class FareCalculatorService {
   private long outHour;
   private long inHour;
   private double duration;
+  private double parkingTime;
   private double discount;
   private TicketDAO ticketDAO;
   private boolean checkDiscount;
@@ -26,20 +27,19 @@ public class FareCalculatorService {
     outHour = ticket.getOutTime().getTime();
     // get duration is in milliseconds and type of duration must be double
     duration = (double) outHour - inHour;
+    parkingTime = (duration - 30 * 60 * 1000) / (60 * 60 * 1000);
     discount = checkDiscount(ticket);
 
     if (duration > 30 * 60 * 1000) {
       switch (ticket.getParkingSpot().getParkingType()) {
       case CAR: {
 
-        ticket.setPrice(
-            (duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.CAR_RATE_PER_HOUR * discount);
+        ticket.setPrice(parkingTime * Fare.CAR_RATE_PER_HOUR * discount);
 
         break;
       }
       case BIKE: {
-        ticket.setPrice(
-            (duration - 30 * 60 * 1000) / (60 * 60 * 1000) * Fare.BIKE_RATE_PER_HOUR * discount);
+        ticket.setPrice(parkingTime * Fare.BIKE_RATE_PER_HOUR * discount);
         break;
       }
       default:
@@ -52,18 +52,15 @@ public class FareCalculatorService {
   }
 
   public double checkDiscount(Ticket ticket) {
+
     // TODO si discount (ticketDAO.isRecurring(ticket.getVehicleRegNumber()) = vrai alors return
-    // 0.95
-    // TODO sinon return 1
+    // 0.95 sinon return 1
     if (checkDiscount) {
       ticketDAO.isRecurring(ticket.getVehicleRegNumber());
       return 0.95;
-
     } else {
-
       return 1;
-
     }
-
   }
+
 }
