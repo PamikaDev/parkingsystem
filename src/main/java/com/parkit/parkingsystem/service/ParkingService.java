@@ -21,6 +21,9 @@ public class ParkingService {
   private InputReaderUtil inputReaderUtil;
   private ParkingSpotDAO parkingSpotDAO;
   private TicketDAO ticketDAO;
+  private boolean isRecurring = false;
+  private boolean vehicleInside = false;
+  private boolean vehicleOutside = false;
 
   public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO,
       TicketDAO ticketDAO) {
@@ -36,16 +39,17 @@ public class ParkingService {
     try {
       ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
       if (parkingSpot != null && parkingSpot.getId() > 0) {
+        String vehicleRegNumber = getVehichleRegNumber();
 
         // TODO if (vehicleInside) alors return;
-        boolean vehicleInside = ticketDAO.vehicleInside(getVehichleRegNumber());
+        vehicleInside = ticketDAO.vehicleInside(vehicleRegNumber);
         if (vehicleInside) {
           System.out.println("The vehicle is already inside");
           return;
         }
 
         // Check if incoming vehicle is for a recurring user
-        boolean isRecurring = ticketDAO.isRecurring(getVehichleRegNumber());
+        isRecurring = ticketDAO.isRecurring(vehicleRegNumber);
         if (isRecurring) {
           System.out.println(
               "Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount. ");
@@ -61,17 +65,16 @@ public class ParkingService {
         // ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
         // ticket.setId(ticketID);
         ticket.setParkingSpot(parkingSpot);
-        ticket.setVehicleRegNumber(getVehichleRegNumber());
+        ticket.setVehicleRegNumber(vehicleRegNumber);
         ticket.setPrice(0);
         ticket.setInTime(inTime);
         ticket.setOutTime(null);
         ticketDAO.saveTicket(ticket);
         System.out.println("Generated Ticket and saved in DB");
         System.out.println("Please park your vehicle in spot number:" + parkingSpot.getId());
-        System.out.println(
-            "Recorded in-time for vehicle number:" + getVehichleRegNumber() + " is:" + inTime);
+        System.out
+            .println("Recorded in-time for vehicle number:" + vehicleRegNumber + " is:" + inTime);
       }
-
     } catch (Exception e) {
       logger.error("Unable to process incoming vehicle", e);
     }
@@ -122,20 +125,30 @@ public class ParkingService {
 
   public void processExitingVehicle() {
     try {
+      ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
       String vehicleRegNumber = getVehichleRegNumber();
       // TODO if (vehicleOutside) alors return
-      boolean vehicleOutside = ticketDAO.vehicleOutside(vehicleRegNumber);
+      vehicleOutside = ticketDAO.vehicleOutside(vehicleRegNumber);
       if (vehicleOutside) {
         System.out.println("The vehicle is already outside");
         return;
       }
 
-      Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
+      Date inTime = new Date();
+      Ticket ticket = new Ticket();
+      ticket.setParkingSpot(parkingSpot);
+      ticket.setVehicleRegNumber(vehicleRegNumber);
+      ticket.setPrice(0);
+      ticket.setInTime(inTime);
+      ticket.setOutTime(null);
+      ticketDAO.saveTicket(ticket);
+
+      // Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
       Date outTime = new Date();
       ticket.setOutTime(outTime);
       fareCalculatorService.calculateFare(ticket);
       if (ticketDAO.updateTicket(ticket)) {
-        ParkingSpot parkingSpot = ticket.getParkingSpot();
+        // ParkingSpot parkingSpot = ticket.getParkingSpot();
         parkingSpot.setAvailable(true);
         parkingSpotDAO.updateParking(parkingSpot);
         System.out.println("Please pay the parking fare:" + ticket.getPrice());

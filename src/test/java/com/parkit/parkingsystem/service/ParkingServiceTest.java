@@ -129,7 +129,7 @@ class ParkingServiceTest {
     ticket.setParkingSpot(parkingSpot);
     ticket.setVehicleRegNumber("ABCDEF");
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-    when(ticketDAO.getTicket(any())).thenReturn(ticket);
+    // when(ticketDAO.getTicket(any())).thenReturn(ticket);
 
     parkingServiceTest.processExitingVehicle();
 

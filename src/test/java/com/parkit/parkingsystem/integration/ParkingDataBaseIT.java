@@ -1,7 +1,8 @@
 package com.parkit.parkingsystem.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.when;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -52,7 +53,7 @@ class ParkingDataBaseIT {
 
   @BeforeEach
   private void setUpPerTest() throws Exception {
-    // when(inputReaderUtil.readSelection()).thenReturn(1);
+    when(inputReaderUtil.readSelection()).thenReturn(1);
     // when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
     dataBasePrepareService.clearDataBaseEntries();
   }
@@ -64,14 +65,11 @@ class ParkingDataBaseIT {
 
   @Test
   void testParkingACar() {
-    // GIVEN
+
     final ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO,
         ticketDAO);
-
-    // WHEN
     parkingService.processIncomingVehicle();
 
-    // THEN
     // TODO: Check that a ticket is actually saved in DB.
     final boolean saved = ticketDAO.isSaved("ABCDEF");
     assertFalse(saved);
@@ -83,13 +81,10 @@ class ParkingDataBaseIT {
 
   @Test
   void testParkingLotExit() throws FileNotFoundException, IOException {
-
-    // GIVEN
-    // testParkingACar();
+    testParkingACar();
     final ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO,
         ticketDAO);
 
-    // WHEN
     parkingService.processExitingVehicle();
     final Date date = new Date();
     final Date outTime = new Date();
@@ -98,10 +93,7 @@ class ParkingDataBaseIT {
     final double faregenerated = ticket.getPrice();
     ticket.setOutTime(outTime);
     final Date generatedTime = ticket.getOutTime();
-
-    // THEN
-    assertThat(date).isEqualTo(generatedTime);
-    assertThat(faregenerated).isEqualTo(0.0);
-
+    assertEquals(generatedTime, date);
+    assertEquals(0.0, faregenerated);
   }
 }

@@ -1,38 +1,34 @@
 package com.parkit.parkingsystem.service;
 
 import com.parkit.parkingsystem.constants.Fare;
+import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
 
-  // private TicketDAO ticketDAO;
+//getTime() is in milliseconds and type of getTime() is long
+  private long outHour;
+  private long inHour;
+  private double duration;
+  private double parkingTime;
+  private double discount;
+  private TicketDAO ticketDAO;
+  private boolean checkDiscount;
 
-//  public double checkDiscount(Ticket ticket) {
-//    boolean checkDiscount = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
-//    if (checkDiscount) {
-//      return 0.95;
-//    } else {
-//      return 1;
-//    }
-//  }
-
-  /*
-   * STORY#1 et #2 : Free 30-min parking + discount 5%
-   *
-   * getTime() is in milliseconds and type of getTime() is long duration is in milliseconds and type
-   * of duration must be double
-   */
   public void calculateFare(Ticket ticket) {
     if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
       throw new IllegalArgumentException(
           "Out time provided is incorrect:" + ticket.getOutTime().toString());
     }
 
-    long inHour = ticket.getInTime().getTime();
-    long outHour = ticket.getOutTime().getTime();
-    double duration = (double) outHour - inHour;
-    double parkingTime = (duration - 30 * 60 * 1000) / (60 * 60 * 1000);
-    double discount = checkDiscount(ticket);
+    // STORY#1 et #2 : Free 30-min parking + discount 5%
+
+    inHour = ticket.getInTime().getTime();
+    outHour = ticket.getOutTime().getTime();
+    // get duration is in milliseconds and type of duration must be double
+    duration = (double) outHour - inHour;
+    parkingTime = (duration - 30 * 60 * 1000) / (60 * 60 * 1000);
+    discount = checkDiscount(ticket);
 
     if (duration > 30 * 60 * 1000) {
       switch (ticket.getParkingSpot().getParkingType()) {
@@ -56,15 +52,12 @@ public class FareCalculatorService {
   }
 
   public double checkDiscount(Ticket ticket) {
-    boolean checkDiscount = false;
-    // checkDiscount = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
     if (checkDiscount) {
+      ticketDAO.isRecurring(ticket.getVehicleRegNumber());
       return 0.95;
     } else {
-      // return 1;
+      return 1;
     }
-    return 1.0;
-
   }
 
 }

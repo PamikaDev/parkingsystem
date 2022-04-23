@@ -53,36 +53,19 @@ class ParkingSpotDAOTest {
     parkingSpotDAOUnderTest = null;
   }
 
-  /*
-   * Testing of id number parking type CAR should return 1 because 1
-   */
   @Test
   void getNextAvailableSlotTest_Car() throws SQLException, Exception {
-    // GIVEN
     parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-
-    // WHEN
     final int parkingId = parkingSpotDAOUnderTest
         .getNextAvailableSlot(parkingSpot.getParkingType());
-
-    // THEN
     assertThat(parkingId).isEqualTo(1);
   }
 
-  /*
-   * Testing of id number parking type BIKE return 4 the first id parking available for BIKE in the
-   * DB test
-   */
   @Test
   void getNextAvailableSlotTest_BIKE() throws SQLException, Exception {
-    // GIVEN
     parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-
-    // WHEN
     final int parkingId = parkingSpotDAOUnderTest
         .getNextAvailableSlot(parkingSpot.getParkingType());
-
-    // THEN
     assertThat(parkingId)
         .isEqualTo(parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType()));
   }
@@ -90,26 +73,16 @@ class ParkingSpotDAOTest {
   @Test
   void updateParkingTest_forCAR()
       throws ClassNotFoundException, FileNotFoundException, IOException {
-    // GIVEN
     parkingSpot = new ParkingSpot(1, ParkingType.CAR, true);
-
-    // WHEN
     parkingSpotDAOUnderTest.updateParking(parkingSpot);
-
-    // THEN
     assertTrue(parkingSpot.isAvailable());
   }
 
   @Test
   void updateParkingTest_forBIKE()
       throws ClassNotFoundException, FileNotFoundException, IOException {
-    // GIVEN
     parkingSpot = new ParkingSpot(2, ParkingType.BIKE, true);
-
-    // WHEN
     parkingSpotDAOUnderTest.updateParking(parkingSpot);
-
-    // THEN
     assertTrue(parkingSpot.isAvailable());
   }
 
