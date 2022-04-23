@@ -13,36 +13,34 @@
 //
 //class InteractiveShellTest {
 //
-//	private static InteractiveShell interactiveShellUnderTest;
-//	private ParkingSpot parkingSpot;
+//  private ParkingSpot parkingSpot;
 //
-//	@BeforeAll
-//	private static void setUp() {
-//		interactiveShellUnderTest = new InteractiveShell();
-//	}
+//  @BeforeAll
+//  private static void setUp() {
+//    new InteractiveShell();
+//  }
 //
-//	@AfterAll
-//	public static void tearDown() {
-//		interactiveShellUnderTest = null;
-//	}
+//  @AfterAll
+//  public static void tearDown() {
+//  }
 //
-//	@Test
-//	void loadInterfaceTest() throws Exception {
-//		// GIVEN
-//		boolean continueApp = true;
-//		Date outTime = new Date();
-//		Date inTime = new Date();
-//		Ticket ticket = new Ticket();
-//		ticket.setInTime(inTime);
-//		ticket.setOutTime(outTime);
-//		ticket.setParkingSpot(parkingSpot);
-//		ticket.setPrice(ticket.getPrice());
+//  @Test
+//  void loadInterfaceTest() throws Exception {
+//    // GIVEN
+//    boolean continueApp = true;
+//    Date outTime = new Date();
+//    Date inTime = new Date();
+//    Ticket ticket = new Ticket();
+//    ticket.setInTime(inTime);
+//    ticket.setOutTime(outTime);
+//    ticket.setParkingSpot(parkingSpot);
+//    ticket.setPrice(ticket.getPrice());
 //
-//		// WHEN
-//		interactiveShellUnderTest.loadInterface();
+//    // WHEN
+//    InteractiveShell.loadInterface();
 //
-//		// THEN
-//		assertTrue(continueApp);
-//	}
+//    // THEN
+//    assertTrue(continueApp);
+//  }
 //
 //}

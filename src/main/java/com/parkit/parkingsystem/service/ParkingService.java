@@ -21,9 +21,6 @@ public class ParkingService {
   private InputReaderUtil inputReaderUtil;
   private ParkingSpotDAO parkingSpotDAO;
   private TicketDAO ticketDAO;
-  private boolean isRecurring = false;
-  private boolean vehicleInside = false;
-  private boolean vehicleOutside = false;
 
   public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO,
       TicketDAO ticketDAO) {
@@ -39,17 +36,16 @@ public class ParkingService {
     try {
       ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
       if (parkingSpot != null && parkingSpot.getId() > 0) {
-        String vehicleRegNumber = getVehichleRegNumber();
 
         // TODO if (vehicleInside) alors return;
-        vehicleInside = ticketDAO.vehicleInside(vehicleRegNumber);
+        boolean vehicleInside = ticketDAO.vehicleInside(getVehichleRegNumber());
         if (vehicleInside) {
           System.out.println("The vehicle is already inside");
           return;
         }
 
         // Check if incoming vehicle is for a recurring user
-        isRecurring = ticketDAO.isRecurring(vehicleRegNumber);
+        boolean isRecurring = ticketDAO.isRecurring(getVehichleRegNumber());
         if (isRecurring) {
           System.out.println(
               "Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount. ");
@@ -65,16 +61,17 @@ public class ParkingService {
         // ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
         // ticket.setId(ticketID);
         ticket.setParkingSpot(parkingSpot);
-        ticket.setVehicleRegNumber(vehicleRegNumber);
+        ticket.setVehicleRegNumber(getVehichleRegNumber());
         ticket.setPrice(0);
         ticket.setInTime(inTime);
         ticket.setOutTime(null);
         ticketDAO.saveTicket(ticket);
         System.out.println("Generated Ticket and saved in DB");
         System.out.println("Please park your vehicle in spot number:" + parkingSpot.getId());
-        System.out
-            .println("Recorded in-time for vehicle number:" + vehicleRegNumber + " is:" + inTime);
+        System.out.println(
+            "Recorded in-time for vehicle number:" + getVehichleRegNumber() + " is:" + inTime);
       }
+
     } catch (Exception e) {
       logger.error("Unable to process incoming vehicle", e);
     }
@@ -127,7 +124,7 @@ public class ParkingService {
     try {
       String vehicleRegNumber = getVehichleRegNumber();
       // TODO if (vehicleOutside) alors return
-      vehicleOutside = ticketDAO.vehicleOutside(vehicleRegNumber);
+      boolean vehicleOutside = ticketDAO.vehicleOutside(vehicleRegNumber);
       if (vehicleOutside) {
         System.out.println("The vehicle is already outside");
         return;

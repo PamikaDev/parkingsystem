@@ -251,7 +251,11 @@
 			</plugin>
 
 			<!-- findbugs maven reporting findbugs -->
-
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.4.1</version>
+			</plugin>
 			<!-- Jacoco maven reporting jacoco -->
 			<plugin>
 				<groupId>org.jacoco</groupId>

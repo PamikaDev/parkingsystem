@@ -54,15 +54,27 @@ class TicketDAOTest {
     dataBaseTestConfig.closeConnection(con);
   }
 
+  /*
+   * check that this operation does not save the Ticket in DB
+   */
   @Test
   void saveTicketTest() throws Exception {
+
+    // GIVEN
     inTime = new Date();
     inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
     outTime = new Date();
+
+    // WHEN
     boolean saveTicket = ticketDAO.saveTicket(ticket);
+
+    // THEN
     assertFalse(saveTicket);
   }
 
+  /*
+   * Check that getTicket method take vehicle register number as parameter
+   */
   @Test
   void getTicketTest() throws ClassNotFoundException, SQLException, IOException {
     String str = "ABCDEF";
@@ -73,49 +85,80 @@ class TicketDAOTest {
 
     // WHEN
     boolean getTicket = ticketDAO.getTicket(str) != null;
+    // Ticket ticketdaotest = ticketDAO.getTicket(str);
 
     // THEN
     assertFalse(getTicket);
+    // assertThat(str).isEqualTo(ticketdaotest.getVehicleRegNumber());
 
   }
 
   @Test
   void updateTicketTest() throws ClassNotFoundException, SQLException {
+    // GIVEN
     outTime = new Date();
     ticket.setOutTime(outTime);
     ticket.setPrice(1.5);
+
+    // WHEN
     boolean updateTicket = ticketDAO.updateTicket(ticket);
+
+    // THEN
     assertTrue(updateTicket);
   }
 
-  // Check that a vehicle register number is for a recurring user
+  /*
+   * Check that a vehicle register number is for a recurring user
+   */
   @Test
   void isRecurringTest() throws ClassNotFoundException, SQLException {
+    // GIVEN
     ticket.setVehicleRegNumber("ABCDEF");
+
+    // WHEN
     boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
-    assertFalse(isRecurring);
+
+    // THEN
+    assertTrue(isRecurring);
   }
 
-  // Check if vehicle Reg Number is saved
+  /*
+   * Check if vehicle Reg Number is saved
+   */
   @Test
   void isSavedTest() {
+    // GIVEN
     ticket.setVehicleRegNumber("ABCDEF");
+
+    // WHEN
     boolean isSaved = ticketDAO.isSaved(ticket.getVehicleRegNumber());
+
+    // THEN
     assertFalse(isSaved);
   }
 
   // Check if vehicle is inside
   @Test
   void vehicleInside() {
+    // GIVEN
     ticket.setOutTime(null);
+
+    // WHEN
     boolean vehicleInside = ticketDAO.vehicleInside(null);
+
+    // THEN
     assertFalse(vehicleInside);
   }
 
   // Check if vehicle is outside
   void vehicleOutside() {
-    ticket.setOutTime(outTime);
+    // GIVEN
+    ticket.setOutTime(null);
+
+    // WHEN
     boolean vehicleOutside = ticketDAO.vehicleOutside(null);
+
+    // THEN
     assertFalse(vehicleOutside);
   }
 

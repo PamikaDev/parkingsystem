@@ -103,7 +103,7 @@ public class TicketDAO {
     } catch (Exception ex) {
       logger.error("Error checking vehicle reg number is for a recurring user", ex);
     }
-    return false;
+    return true;
   }
 
   // Check if vehicle Reg Number is saved
@@ -139,6 +139,7 @@ public class TicketDAO {
 
   }
 
+//check if vehicleRegNumber is already outside
   public boolean vehicleOutside(String vehicleRegNumber) {
     try (Connection con = dataBaseConfig.getConnection();
         PreparedStatement ps = con.prepareStatement(DBConstants.GET_OUTSIDE_VEHICLE)) {
