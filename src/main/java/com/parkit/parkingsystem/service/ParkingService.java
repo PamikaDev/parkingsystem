@@ -1,5 +1,6 @@
 package com.parkit.parkingsystem.service;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
@@ -21,9 +22,6 @@ public class ParkingService {
   private InputReaderUtil inputReaderUtil;
   private ParkingSpotDAO parkingSpotDAO;
   private TicketDAO ticketDAO;
-  private boolean isRecurring = false;
-  private boolean vehicleInside = false;
-  private boolean vehicleOutside = false;
 
   public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO,
       TicketDAO ticketDAO) {
@@ -32,8 +30,8 @@ public class ParkingService {
     this.ticketDAO = ticketDAO;
   }
 
-  /**
-   * Méthode pour faire rentrer un véhicule dans le parking
+  /*
+   * Method for bringing a vehicle into the parking lot Process for incoming a vehicle
    */
   public void processIncomingVehicle() {
     try {
@@ -41,35 +39,35 @@ public class ParkingService {
       if (parkingSpot != null && parkingSpot.getId() > 0) {
         String vehicleRegNumber = getVehichleRegNumber();
 
-        // TODO if (vehicleInside) alors return;
-        vehicleInside = ticketDAO.vehicleInside(vehicleRegNumber);
+        // if (vehicleInside) then return;
+        boolean vehicleInside = ticketDAO.vehicleInside(vehicleRegNumber);
         if (vehicleInside) {
           System.out.println("The vehicle is already inside");
           return;
         }
 
-        // Check if incoming vehicle is for a recurring user
-        isRecurring = ticketDAO.isRecurring(vehicleRegNumber);
+        // check if incoming vehicle is for a recurring user
+        boolean isRecurring = ticketDAO.isRecurring(vehicleRegNumber);
         if (isRecurring) {
           System.out.println(
               "Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount. ");
           logger.info("L'utilisateur est recurrent");
         }
 
-        // Attribuez place de parking et marquez la disponibilité fausse
+        // assign parking space and mark false availability
         parkingSpot.setAvailable(false);
         parkingSpotDAO.updateParking(parkingSpot);
 
         Date inTime = new Date();
         Ticket ticket = new Ticket();
-        // ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
-        // ticket.setId(ticketID);
+
         ticket.setParkingSpot(parkingSpot);
         ticket.setVehicleRegNumber(vehicleRegNumber);
         ticket.setPrice(0);
         ticket.setInTime(inTime);
         ticket.setOutTime(null);
         ticketDAO.saveTicket(ticket);
+
         System.out.println("Generated Ticket and saved in DB");
         System.out.println("Please park your vehicle in spot number:" + parkingSpot.getId());
         System.out
@@ -91,16 +89,21 @@ public class ParkingService {
     try {
       ParkingType parkingType = getVehichleType();
       parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);
+
       if (parkingNumber > 0) {
         parkingSpot = new ParkingSpot(parkingNumber, parkingType, true);
       } else {
-        throw new Exception("Error fetching parking number from DB. Parking slots might be full");
+        throw new SQLException(
+            "Error fetching parking number from DB. Parking slots might be full");
       }
+
     } catch (IllegalArgumentException ie) {
       logger.error("Error parsing user input for type of vehicle", ie);
+
     } catch (Exception e) {
       logger.error("Error fetching next available parking slot", e);
     }
+
     return parkingSpot;
   }
 
@@ -108,6 +111,7 @@ public class ParkingService {
     System.out.println("Please select vehicle type from menu");
     System.out.println("1 CAR");
     System.out.println("2 BIKE");
+
     int input = inputReaderUtil.readSelection();
     switch (input) {
     case 1: {
@@ -123,12 +127,16 @@ public class ParkingService {
     }
   }
 
+  /*
+   * Method for getting a vehicle out of the parking lot Process for exiting a vehicle
+   */
   public void processExitingVehicle() {
     try {
       ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
       String vehicleRegNumber = getVehichleRegNumber();
-      // TODO if (vehicleOutside) alors return
-      vehicleOutside = ticketDAO.vehicleOutside(vehicleRegNumber);
+
+      // if (vehicleOutside) then return
+      boolean vehicleOutside = ticketDAO.vehicleOutside(vehicleRegNumber);
       if (vehicleOutside) {
         System.out.println("The vehicle is already outside");
         return;
@@ -142,18 +150,19 @@ public class ParkingService {
       ticket.setInTime(inTime);
       ticket.setOutTime(null);
       ticketDAO.saveTicket(ticket);
-
-      // Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
       Date outTime = new Date();
       ticket.setOutTime(outTime);
+
       fareCalculatorService.calculateFare(ticket);
+
       if (ticketDAO.updateTicket(ticket)) {
-        // ParkingSpot parkingSpot = ticket.getParkingSpot();
         parkingSpot.setAvailable(true);
         parkingSpotDAO.updateParking(parkingSpot);
+
         System.out.println("Please pay the parking fare:" + ticket.getPrice());
         System.out.println("Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber()
             + " is:" + outTime);
+
       } else {
         System.out.println("Unable to update ticket information. Error occurred");
       }

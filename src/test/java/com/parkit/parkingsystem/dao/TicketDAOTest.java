@@ -3,9 +3,7 @@ package com.parkit.parkingsystem.dao;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
@@ -55,21 +53,32 @@ class TicketDAOTest {
   }
 
   @Test
-  void saveTicketTest() throws Exception {
+  void saveTicketTest() {
+
+    // GIVEN
     inTime = new Date();
     inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
     outTime = new Date();
+
+    // WHEN
     boolean saveTicket = ticketDAO.saveTicket(ticket);
+
+    // THEN
     assertFalse(saveTicket);
   }
 
   @Test
-  void getTicketTest() throws ClassNotFoundException, SQLException, IOException {
+  void getTicketTest() {
     String str = "ABCDEF";
 
     // GIVEN
     ticket.setParkingSpot(parkingSpot);
     ticket.setVehicleRegNumber(str);
+    ticket.setId(1);
+    ticket.setPrice(0);
+    ticket.setInTime(inTime);
+    ticket.setOutTime(null);
+    ticketDAO.saveTicket(ticket);
 
     // WHEN
     boolean getTicket = ticketDAO.getTicket(str) != null;
@@ -80,42 +89,82 @@ class TicketDAOTest {
   }
 
   @Test
-  void updateTicketTest() throws ClassNotFoundException, SQLException {
+  void updateTicketTest() {
+
+    // GIVEN
     outTime = new Date();
     ticket.setOutTime(outTime);
     ticket.setPrice(1.5);
+
+    // WHEN
     boolean updateTicket = ticketDAO.updateTicket(ticket);
+
+    // THEN
     assertTrue(updateTicket);
   }
 
-  // Check that a vehicle register number is for a recurring user
+  /*
+   * Check that a vehicle register number is for a recurring user
+   */
   @Test
-  void isRecurringTest() throws ClassNotFoundException, SQLException {
+  void isRecurringTest() {
+
+    // GIVEN
     ticket.setVehicleRegNumber("ABCDEF");
+
+    // WHEN
     boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
+
+    // THEN
     assertFalse(isRecurring);
   }
 
-  // Check if vehicle Reg Number is saved
+  /*
+   * Check if vehicle Reg Number is saved
+   */
   @Test
   void isSavedTest() {
+
+    // GIVEN
     ticket.setVehicleRegNumber("ABCDEF");
+
+    // WHEN
     boolean isSaved = ticketDAO.isSaved(ticket.getVehicleRegNumber());
+
+    // THEN
     assertFalse(isSaved);
   }
 
-  // Check if vehicle is inside
+  /*
+   * Check if vehicle is inside
+   */
   @Test
   void vehicleInside() {
+
+    // GIVEN
     ticket.setOutTime(null);
+
+    // WHEN
     boolean vehicleInside = ticketDAO.vehicleInside(null);
+
+    // THEN
     assertFalse(vehicleInside);
   }
 
-  // Check if vehicle is outside
+  /*
+   * Check if vehicle is outside
+   */
+  @Test
   void vehicleOutside() {
+
+    // GIVEN
+    outTime = new Date();
     ticket.setOutTime(outTime);
-    boolean vehicleOutside = ticketDAO.vehicleOutside(null);
+
+    // WHEN
+    boolean vehicleOutside = ticketDAO.vehicleOutside(ticket.getVehicleRegNumber());
+
+    // THEN
     assertFalse(vehicleOutside);
   }
 

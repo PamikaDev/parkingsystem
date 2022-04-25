@@ -6,14 +6,7 @@ import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
 
-//getTime() is in milliseconds and type of getTime() is long
-  private long outHour;
-  private long inHour;
-  private double duration;
-  private double parkingTime;
-  private double discount;
   private TicketDAO ticketDAO;
-  private boolean checkDiscount;
 
   public void calculateFare(Ticket ticket) {
     if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
@@ -21,14 +14,18 @@ public class FareCalculatorService {
           "Out time provided is incorrect:" + ticket.getOutTime().toString());
     }
 
-    // STORY#1 et #2 : Free 30-min parking + discount 5%
+    /*
+     * STORY#1 et #2 : Free 30-min parking + discount 5%
+     *
+     * getTime() is in milliseconds and type of getTime() is long
+     */
 
-    inHour = ticket.getInTime().getTime();
-    outHour = ticket.getOutTime().getTime();
+    long inHour = ticket.getInTime().getTime();
+    long outHour = ticket.getOutTime().getTime();
     // get duration is in milliseconds and type of duration must be double
-    duration = (double) outHour - inHour;
-    parkingTime = (duration - 30 * 60 * 1000) / (60 * 60 * 1000);
-    discount = checkDiscount(ticket);
+    double duration = (double) outHour - inHour;
+    double parkingTime = (duration - 30 * 60 * 1000) / (60 * 60 * 1000);
+    double discount = checkDiscount(ticket);
 
     if (duration > 30 * 60 * 1000) {
       switch (ticket.getParkingSpot().getParkingType()) {
@@ -52,12 +49,15 @@ public class FareCalculatorService {
   }
 
   public double checkDiscount(Ticket ticket) {
-    if (checkDiscount) {
+    boolean isDiscount = false;
+
+    if (isDiscount) {
+
       ticketDAO.isRecurring(ticket.getVehicleRegNumber());
       return 0.95;
-    } else {
-      return 1;
     }
+
+    return 1;
   }
 
 }

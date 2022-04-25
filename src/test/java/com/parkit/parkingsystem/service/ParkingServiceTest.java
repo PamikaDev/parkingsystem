@@ -59,6 +59,7 @@ class ParkingServiceTest {
   @Test
   void processIncomingVehicleTest() throws Exception {
 
+    // GIVEN
     final ParkingSpot parkingSpot = new ParkingSpot(0, null, false);
     parkingSpotDAO.updateParking(parkingSpot);
     ticket.setParkingSpot(parkingSpot);
@@ -67,8 +68,10 @@ class ParkingServiceTest {
     ticket.setOutTime(null);
     ticketDAO.saveTicket(ticket);
 
+    // WHEN
     parkingServiceTest.processIncomingVehicle();
 
+    // THEN
     verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
     verify(ticketDAO, Mockito.times(1)).saveTicket(any(Ticket.class));
     assertFalse(parkingSpot.isAvailable());
@@ -77,12 +80,15 @@ class ParkingServiceTest {
   @Test
   void getVehichleRegNumberTest() throws Exception {
 
+    // GIVEN
     final Ticket ticket = new Ticket();
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-
     ticket.setVehicleRegNumber(inputReaderUtil.readVehicleRegistrationNumber());
+
+    // WHEN
     parkingServiceTest.getVehichleRegNumber();
 
+    // THEN
     verify(inputReaderUtil, atLeast(1)).readVehicleRegistrationNumber();
     assertThat(ticket.getVehicleRegNumber()).isEqualTo("ABCDEF");
   }
@@ -90,12 +96,15 @@ class ParkingServiceTest {
   @Test
   void getNextParkingNumberIfAvailableTest() throws SQLException, Exception {
 
+    // GIVEN
     final ParkingSpot parkingSpot = new ParkingSpot(0, null, false);
     when(inputReaderUtil.readSelection()).thenReturn(1);
     when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(2);
 
+    // WHEN
     parkingServiceTest.getNextParkingNumberIfAvailable();
 
+    // THEN
     verify(parkingSpotDAO, times(1)).getNextAvailableSlot(any(ParkingType.class));
     assertFalse(parkingSpot.isAvailable());
   }
@@ -117,11 +126,14 @@ class ParkingServiceTest {
     }
   }
 
-  // Testing process exiting vehicle should update Ticket and Parking and set a
-  // parking spot as available
+  /*
+   * Testing process exiting vehicle should update Ticket and Parking and set a parking spot as
+   * available
+   */
   @Test
   void processExitingVehicleTest() throws Exception {
 
+    // GIVEN
     final ParkingSpot parkingSpot = new ParkingSpot(0, null, false);
     parkingSpotDAO.updateParking(parkingSpot);
     final Ticket ticket = new Ticket();
@@ -131,8 +143,10 @@ class ParkingServiceTest {
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
     // when(ticketDAO.getTicket(any())).thenReturn(ticket);
 
+    // WHEN
     parkingServiceTest.processExitingVehicle();
 
+    // THEN
     verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
     assertFalse(parkingSpot.isAvailable());
   }
