@@ -1,9 +1,9 @@
 package com.parkit.parkingsystem.util;
 
+import java.util.Scanner;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Scanner;
 
 public class InputReaderUtil {
 
@@ -28,6 +28,7 @@ public class InputReaderUtil {
         throw new IllegalArgumentException("Invalid input provided");
       }
       return vehicleRegNumber;
+
     } catch (Exception e) {
       logger.error("Error while reading user input from Shell", e);
       System.out.println(

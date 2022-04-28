@@ -2,7 +2,6 @@ package com.parkit.parkingsystem.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.times;
@@ -112,18 +111,24 @@ class ParkingServiceTest {
   @Test
   void getVehichleTypeTest() {
 
-    try {
-      when(inputReaderUtil.readSelection()).thenReturn(1);
-      parkingServiceTest.getVehichleType();
-      assertThat(parkingServiceTest.getVehichleType()).isEqualTo(ParkingType.CAR);
+    // GIVEN
+    when(inputReaderUtil.readSelection()).thenReturn(1);
 
-      when(inputReaderUtil.readSelection()).thenReturn(2);
-      parkingServiceTest.getVehichleType();
-      assertThat(parkingServiceTest.getVehichleType()).isEqualTo(ParkingType.BIKE);
+    // WHEN
+    parkingServiceTest.getVehichleType();
 
-    } catch (final Exception e) {
-      assertTrue(e instanceof IllegalArgumentException);
-    }
+    // THEN
+    assertThat(parkingServiceTest.getVehichleType()).isEqualTo(ParkingType.CAR);
+
+    // GIVEN
+    when(inputReaderUtil.readSelection()).thenReturn(2);
+
+    // WHEN
+    parkingServiceTest.getVehichleType();
+
+    // THEN
+    assertThat(parkingServiceTest.getVehichleType()).isEqualTo(ParkingType.BIKE);
+
   }
 
   /*

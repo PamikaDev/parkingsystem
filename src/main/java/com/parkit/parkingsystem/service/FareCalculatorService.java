@@ -54,7 +54,7 @@ public class FareCalculatorService {
     if (isDiscount) {
 
       ticketDAO.isRecurring(ticket.getVehicleRegNumber());
-      return 0.95;
+      ticket.getDiscount();
     }
 
     return 1;

@@ -130,9 +130,9 @@ public class ParkingService {
   /*
    * Method for getting a vehicle out of the parking lot Process for exiting a vehicle
    */
+
   public void processExitingVehicle() {
     try {
-      ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
       String vehicleRegNumber = getVehichleRegNumber();
 
       // if (vehicleOutside) then return
@@ -142,20 +142,14 @@ public class ParkingService {
         return;
       }
 
-      Date inTime = new Date();
-      Ticket ticket = new Ticket();
-      ticket.setParkingSpot(parkingSpot);
-      ticket.setVehicleRegNumber(vehicleRegNumber);
-      ticket.setPrice(0);
-      ticket.setInTime(inTime);
-      ticket.setOutTime(null);
-      ticketDAO.saveTicket(ticket);
+      Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
       Date outTime = new Date();
       ticket.setOutTime(outTime);
 
       fareCalculatorService.calculateFare(ticket);
 
       if (ticketDAO.updateTicket(ticket)) {
+        ParkingSpot parkingSpot = ticket.getParkingSpot();
         parkingSpot.setAvailable(true);
         parkingSpotDAO.updateParking(parkingSpot);
 

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +51,7 @@ public class ParkingSpotDAO {
       ps.setInt(2, parkingSpot.getId());
       int updateRowCount = ps.executeUpdate();
       return (updateRowCount == 1);
-    } catch (SQLException ex) {
+    } catch (Exception ex) {
       logger.error("Error updating parking info", ex);
     } finally {
       dataBaseConfig.closeConnection(null);

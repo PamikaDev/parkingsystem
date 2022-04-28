@@ -49,6 +49,7 @@ public class TicketDAO {
   public Ticket getTicket(String vehicleRegNumber) {
     Connection con = null;
     Ticket ticket = null;
+    ParkingSpot parkingSpot;
     try {
       con = dataBaseConfig.getConnection();
       PreparedStatement ps = con.prepareStatement(DBConstants.GET_TICKET);
@@ -57,8 +58,7 @@ public class TicketDAO {
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
         ticket = new Ticket();
-        ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1),
-            ParkingType.valueOf(rs.getString(6)), false);
+        parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)), false);
         ticket.setParkingSpot(parkingSpot);
         ticket.setId(rs.getInt(2));
         ticket.setVehicleRegNumber(vehicleRegNumber);
