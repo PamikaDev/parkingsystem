@@ -48,17 +48,19 @@ public class TicketDAO {
 
   public Ticket getTicket(String vehicleRegNumber) {
     Connection con = null;
-    Ticket ticket = null;
-    ParkingSpot parkingSpot;
+    Ticket ticket = new Ticket();
+
     try {
       con = dataBaseConfig.getConnection();
       PreparedStatement ps = con.prepareStatement(DBConstants.GET_TICKET);
-      // ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
       ps.setString(1, vehicleRegNumber);
+
       ResultSet rs = ps.executeQuery();
+
       if (rs.next()) {
-        ticket = new Ticket();
-        parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)), false);
+        ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1),
+            ParkingType.valueOf(rs.getString(6)), false);
+
         ticket.setParkingSpot(parkingSpot);
         ticket.setId(rs.getInt(2));
         ticket.setVehicleRegNumber(vehicleRegNumber);
@@ -66,19 +68,22 @@ public class TicketDAO {
         ticket.setInTime(rs.getTimestamp(4));
         ticket.setOutTime(rs.getTimestamp(5));
       }
+
       dataBaseConfig.closeResultSet(rs);
       dataBaseConfig.closePreparedStatement(ps);
+
     } catch (Exception ex) {
       logger.error("Error fetching next available slot", ex);
     } finally {
       dataBaseConfig.closeConnection(con);
-
     }
+
     return ticket;
   }
 
   public boolean updateTicket(Ticket ticket) {
     Connection con = null;
+
     try {
       con = dataBaseConfig.getConnection();
       PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_TICKET);
@@ -87,11 +92,13 @@ public class TicketDAO {
       ps.setInt(3, ticket.getId());
       ps.execute();
       return true;
+
     } catch (Exception ex) {
       logger.error("Error saving ticket info", ex);
     } finally {
       dataBaseConfig.closeConnection(con);
     }
+
     return false;
   }
 
@@ -99,17 +106,21 @@ public class TicketDAO {
    * Check if a vehicle reg number is for a recurring user
    */
   public boolean isRecurring(String vehicleRegNumber) {
+
     try (Connection con = dataBaseConfig.getConnection();
         PreparedStatement ps = con.prepareStatement(DBConstants.GET_RECURRING_VEHICLE)) {
       ps.setString(1, vehicleRegNumber);
       ResultSet rs = ps.executeQuery();
+
       if (rs.next()) {
         dataBaseConfig.closeResultSet(rs);
         return true;
       }
+
     } catch (Exception ex) {
       logger.error("Error checking vehicle reg number is for a recurring user", ex);
     }
+
     return false;
   }
 
@@ -117,10 +128,13 @@ public class TicketDAO {
    * Check if vehicle Reg Number is saved
    */
   public boolean isSaved(String vehicleRegNumber) {
+
     try (Connection con = dataBaseConfig.getConnection();
         PreparedStatement ps = con.prepareStatement(DBConstants.GET_SAVED_TICKET)) {
+
       ps.setString(1, vehicleRegNumber);
       ResultSet rs = ps.executeQuery();
+
       if (rs.next()) {
         dataBaseConfig.closeResultSet(rs);
         return true;
@@ -128,6 +142,7 @@ public class TicketDAO {
     } catch (Exception ex) {
       logger.error("Error saving vehicle Reg Number", ex);
     }
+
     return false;
 
   }

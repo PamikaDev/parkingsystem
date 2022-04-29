@@ -313,14 +313,14 @@ class FareCalculatorServiceTest {
   void checkDiscount() {
 
     // GIVEN
-    ticket = new Ticket();
     boolean isDiscount = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
 
     // WHEN
-    fareCalculatorServiceTest.checkDiscount(ticket);
+    double discount = fareCalculatorServiceTest.checkDiscount(ticket);
 
     // THEN
     assertFalse(isDiscount);
+    assertThat(discount).isEqualTo(1);
   }
 
 }

@@ -39,15 +39,16 @@ public class ParkingService {
       if (parkingSpot != null && parkingSpot.getId() > 0) {
         String vehicleRegNumber = getVehichleRegNumber();
 
-        // if (vehicleInside) then return;
-        boolean vehicleInside = ticketDAO.vehicleInside(vehicleRegNumber);
+        Ticket ticket = new Ticket();
+        // check if (vehicleInside) then return;
+        boolean vehicleInside = ticketDAO.vehicleInside(ticket.getVehicleRegNumber());
         if (vehicleInside) {
           System.out.println("The vehicle is already inside");
           return;
         }
 
         // check if incoming vehicle is for a recurring user
-        boolean isRecurring = ticketDAO.isRecurring(vehicleRegNumber);
+        boolean isRecurring = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
         if (isRecurring) {
           System.out.println(
               "Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount. ");
@@ -59,7 +60,6 @@ public class ParkingService {
         parkingSpotDAO.updateParking(parkingSpot);
 
         Date inTime = new Date();
-        Ticket ticket = new Ticket();
 
         ticket.setParkingSpot(parkingSpot);
         ticket.setVehicleRegNumber(vehicleRegNumber);
@@ -133,16 +133,16 @@ public class ParkingService {
 
   public void processExitingVehicle() {
     try {
-      String vehicleRegNumber = getVehichleRegNumber();
 
+      Ticket ticket = new Ticket();
       // if (vehicleOutside) then return
-      boolean vehicleOutside = ticketDAO.vehicleOutside(vehicleRegNumber);
+      boolean vehicleOutside = ticketDAO.vehicleOutside(ticket.getVehicleRegNumber());
       if (vehicleOutside) {
         System.out.println("The vehicle is already outside");
         return;
       }
 
-      Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
+      ticket = ticketDAO.getTicket(ticket.getVehicleRegNumber());
       Date outTime = new Date();
       ticket.setOutTime(outTime);
 

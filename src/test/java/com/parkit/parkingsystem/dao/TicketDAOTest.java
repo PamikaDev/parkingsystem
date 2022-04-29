@@ -12,18 +12,21 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 
+@ExtendWith(MockitoExtension.class)
 class TicketDAOTest {
 
+  private static ParkingSpot parkingSpot;
   private static TicketDAO ticketDAOTest;
   private static Ticket ticket;
   private static Date inTime;
   private static Date outTime;
-  private static ParkingSpot parkingSpot;
 
   public static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
   Connection con = null;
@@ -50,6 +53,7 @@ class TicketDAOTest {
   @AfterEach
   private void tearDownPerTest() {
     dataBaseTestConfig.closeConnection(con);
+
   }
 
   @Test
@@ -59,6 +63,7 @@ class TicketDAOTest {
     inTime = new Date();
     inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
     outTime = new Date();
+    outTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 
     // WHEN
     boolean saveTicket = ticketDAOTest.saveTicket(ticket);
@@ -79,8 +84,7 @@ class TicketDAOTest {
     boolean getTicket = ticketDAOTest.getTicket(str) != null;
 
     // THEN
-    assertFalse(getTicket);
-
+    assertTrue(getTicket);
   }
 
   @Test

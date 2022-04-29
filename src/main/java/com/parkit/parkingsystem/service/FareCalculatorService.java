@@ -50,14 +50,13 @@ public class FareCalculatorService {
 
   public double checkDiscount(Ticket ticket) {
     boolean isDiscount = false;
+    double discount = 0.95;
 
     if (isDiscount) {
-
       ticketDAO.isRecurring(ticket.getVehicleRegNumber());
-      ticket.getDiscount();
+      ticket.setDiscount(discount);
+
     }
-
-    return 1;
+    return discount = 1;
   }
-
 }

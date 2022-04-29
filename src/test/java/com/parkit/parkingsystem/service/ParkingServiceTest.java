@@ -66,6 +66,8 @@ class ParkingServiceTest {
     ticket.setPrice(0);
     ticket.setOutTime(null);
     ticketDAO.saveTicket(ticket);
+    ticketDAO.vehicleInside(ticket.getVehicleRegNumber());
+    ticketDAO.isRecurring(ticket.getVehicleRegNumber());
 
     // WHEN
     parkingServiceTest.processIncomingVehicle();
@@ -73,6 +75,8 @@ class ParkingServiceTest {
     // THEN
     verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
     verify(ticketDAO, Mockito.times(1)).saveTicket(any(Ticket.class));
+    verify(ticketDAO, Mockito.times(1)).vehicleInside(any());
+    verify(ticketDAO, Mockito.times(1)).isRecurring(any());
     assertFalse(parkingSpot.isAvailable());
   }
 
@@ -83,12 +87,14 @@ class ParkingServiceTest {
     final Ticket ticket = new Ticket();
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
     ticket.setVehicleRegNumber(inputReaderUtil.readVehicleRegistrationNumber());
+    ticketDAO.getTicket(ticket.getVehicleRegNumber());
 
     // WHEN
     parkingServiceTest.getVehichleRegNumber();
 
     // THEN
     verify(inputReaderUtil, atLeast(1)).readVehicleRegistrationNumber();
+    verify(ticketDAO, Mockito.times(1)).getTicket(any());
     assertThat(ticket.getVehicleRegNumber()).isEqualTo("ABCDEF");
   }
 
@@ -145,14 +151,20 @@ class ParkingServiceTest {
     ticket.setInTime(new Date(System.currentTimeMillis() - 60 * 60 * 1000));
     ticket.setParkingSpot(parkingSpot);
     ticket.setVehicleRegNumber("ABCDEF");
-    when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-    // when(ticketDAO.getTicket(any())).thenReturn(ticket);
+    inputReaderUtil.readVehicleRegistrationNumber();
+    when(ticketDAO.getTicket(any())).thenReturn(ticket);
+    ticketDAO.updateTicket(ticket);
+    fareCalculatorService.calculateFare(ticket);
 
     // WHEN
     parkingServiceTest.processExitingVehicle();
 
     // THEN
     verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+    verify(ticketDAO, Mockito.times(1)).updateTicket(any(Ticket.class));
+    verify(fareCalculatorService, atLeast(1)).calculateFare(ticket);
+    verify(inputReaderUtil, atLeast(1)).readVehicleRegistrationNumber();
+    assertThat(ticket.getVehicleRegNumber()).isEqualTo("ABCDEF");
     assertFalse(parkingSpot.isAvailable());
   }
 }
