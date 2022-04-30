@@ -3,6 +3,8 @@ package com.parkit.parkingsystem.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 import java.util.Date;
 
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.parkit.parkingsystem.constants.Fare;
@@ -24,10 +27,11 @@ import com.parkit.parkingsystem.model.Ticket;
 @ExtendWith(MockitoExtension.class)
 class FareCalculatorServiceTest {
 
+  @Mock
   private FareCalculatorService fareCalculatorServiceTest;
   private Ticket ticket;
   @Mock
-  private TicketDAO ticketDAO;
+  private static TicketDAO ticketDAO;
 
   @BeforeEach
   private void setUpPerTest() {
@@ -186,8 +190,11 @@ class FareCalculatorServiceTest {
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
 
-    // THEN
+    // WHEN
     assertThrows(NullPointerException.class, () -> fareCalculatorServiceTest.calculateFare(ticket));
+
+    // THEN
+
   }
 
   @Test
@@ -203,9 +210,33 @@ class FareCalculatorServiceTest {
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
 
-    // THEN
+    // WHEN
     assertThrows(IllegalArgumentException.class,
         () -> fareCalculatorServiceTest.calculateFare(ticket));
+
+    // THEN
+
+  }
+
+  @Test
+  public void calculateFareCarWithFutureInTime() {
+
+    // GIVEN
+    Date inTime = new Date();
+    inTime.setTime(System.currentTimeMillis() + (60 * 60 * 1000));
+    Date outTime = new Date();
+    ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+
+    ticket.setInTime(inTime);
+    ticket.setOutTime(outTime);
+    ticket.setParkingSpot(parkingSpot);
+
+    // WHEN
+    assertThrows(IllegalArgumentException.class,
+        () -> fareCalculatorServiceTest.calculateFare(ticket));
+
+    // THEN
+
   }
 
   @Test
@@ -314,13 +345,16 @@ class FareCalculatorServiceTest {
 
     // GIVEN
     boolean isDiscount = ticketDAO.isRecurring(ticket.getVehicleRegNumber());
+    Double discount = 0.95;
 
     // WHEN
-    double discount = fareCalculatorServiceTest.checkDiscount(ticket);
+    discount = fareCalculatorServiceTest.checkDiscount(ticket);
 
     // THEN
+    verify(ticketDAO, Mockito.times(1)).isRecurring(any());
     assertFalse(isDiscount);
     assertThat(discount).isEqualTo(1);
+    // assertThat(isDiscount).isEqualTo(false);
   }
 
 }

@@ -7,11 +7,15 @@
 //import org.junit.jupiter.api.AfterAll;
 //import org.junit.jupiter.api.BeforeAll;
 //import org.junit.jupiter.api.Test;
+//import org.mockito.Mock;
 //
 //import com.parkit.parkingsystem.model.ParkingSpot;
 //import com.parkit.parkingsystem.model.Ticket;
 //
 //class InteractiveShellTest {
+//
+//  @Mock
+//  private static ParkingService parkingServiceTest;
 //
 //  private ParkingSpot parkingSpot;
 //

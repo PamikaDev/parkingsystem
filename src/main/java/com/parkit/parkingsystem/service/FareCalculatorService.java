@@ -19,7 +19,6 @@ public class FareCalculatorService {
      *
      * getTime() is in milliseconds and type of getTime() is long
      */
-
     long inHour = ticket.getInTime().getTime();
     long outHour = ticket.getOutTime().getTime();
     // get duration is in milliseconds and type of duration must be double

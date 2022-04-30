@@ -11,6 +11,8 @@ import static org.mockito.Mockito.when;
 import java.sql.SQLException;
 import java.util.Date;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,8 @@ class ParkingServiceTest {
 
   private ParkingService parkingServiceTest;
 
+  @Mock
+  final Logger logger = LogManager.getLogger("ParkingService");
   @Mock
   private static InputReaderUtil inputReaderUtil;
   @Mock
@@ -68,6 +72,7 @@ class ParkingServiceTest {
     ticketDAO.saveTicket(ticket);
     ticketDAO.vehicleInside(ticket.getVehicleRegNumber());
     ticketDAO.isRecurring(ticket.getVehicleRegNumber());
+    logger.error("Unable to process incoming vehicle");
 
     // WHEN
     parkingServiceTest.processIncomingVehicle();
@@ -77,6 +82,7 @@ class ParkingServiceTest {
     verify(ticketDAO, Mockito.times(1)).saveTicket(any(Ticket.class));
     verify(ticketDAO, Mockito.times(1)).vehicleInside(any());
     verify(ticketDAO, Mockito.times(1)).isRecurring(any());
+    verify(logger, Mockito.times(1)).error("Unable to process incoming vehicle");
     assertFalse(parkingSpot.isAvailable());
   }
 
@@ -151,19 +157,21 @@ class ParkingServiceTest {
     ticket.setInTime(new Date(System.currentTimeMillis() - 60 * 60 * 1000));
     ticket.setParkingSpot(parkingSpot);
     ticket.setVehicleRegNumber("ABCDEF");
+    fareCalculatorService.calculateFare(ticket);
     inputReaderUtil.readVehicleRegistrationNumber();
     when(ticketDAO.getTicket(any())).thenReturn(ticket);
     ticketDAO.updateTicket(ticket);
-    fareCalculatorService.calculateFare(ticket);
+    logger.error("Unable to process exiting vehicle");
 
     // WHEN
     parkingServiceTest.processExitingVehicle();
 
     // THEN
     verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
-    verify(ticketDAO, Mockito.times(1)).updateTicket(any(Ticket.class));
+    verify(ticketDAO, Mockito.times(2)).updateTicket(any(Ticket.class));
     verify(fareCalculatorService, atLeast(1)).calculateFare(ticket);
     verify(inputReaderUtil, atLeast(1)).readVehicleRegistrationNumber();
+    verify(logger, Mockito.times(1)).error("Unable to process exiting vehicle");
     assertThat(ticket.getVehicleRegNumber()).isEqualTo("ABCDEF");
     assertFalse(parkingSpot.isAvailable());
   }
