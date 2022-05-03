@@ -1,170 +1,355 @@
 package com.parkit.parkingsystem.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Date;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
+import com.parkit.parkingsystem.config.DataBaseConfig;
+import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
+
+import nl.altindag.log.LogCaptor;
 
 @ExtendWith(MockitoExtension.class)
 class TicketDAOTest {
 
-  private static ParkingSpot parkingSpot;
-  private static TicketDAO ticketDAOTest;
-  private static Ticket ticket;
-  private static Date inTime;
-  private static Date outTime;
+  // Ma classe à tester
+  TicketDAO ticketDAO;
 
-  public static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
-  Connection con = null;
+  Ticket ticket;
 
-  private static final Logger logger = LogManager.getLogger("TicketDAOTest");
+  private static LogCaptor logcaptor;
 
-  @BeforeAll
-  private static void setUp() {
-    ticketDAOTest = new TicketDAO();
-    ticketDAOTest.setDataBaseConfig(dataBaseTestConfig);
-  }
+  @Mock
+  private DataBaseConfig databaseConfig;
+
+  @Mock
+  private Connection con;
+
+  @Mock
+  private PreparedStatement ps;
+
+  @Mock
+  private ResultSet rs;
+
+  private String vehicleRegNumber = "TOTO";
+
+  @Mock
+  private ParkingSpot parkingSpot;
 
   @BeforeEach
   public void setUpPerTest() {
-    ticket = new Ticket();
-    try {
-      con = dataBaseTestConfig.getConnection();
-    } catch (Exception ex) {
-      logger.error("Error connecting to data base", ex);
+    logcaptor = LogCaptor.forName("TicketDAO");
+    logcaptor.setLogLevelToInfo();
 
-    }
+    ticket = new Ticket();
+    ticketDAO = new TicketDAO();
+    ticket.setId(1);
+    ticket.setVehicleRegNumber(vehicleRegNumber);
+    ticket.setParkingSpot(new ParkingSpot(1, ParkingType.CAR, true));
+    ticket.setPrice(2);
+    ticket.setInTime(new Date());
+    ticket.setOutTime(new Date());
+    ticketDAO.setDataBaseConfig(databaseConfig);
   }
 
   @AfterEach
   private void tearDownPerTest() {
-    dataBaseTestConfig.closeConnection(con);
 
   }
 
   @Test
-  void saveTicketTest() {
+  public void saveTicketOkShouldReturnFalse() throws SQLException, ClassNotFoundException {
 
-    // GIVEN
-    inTime = new Date();
-    inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
-    outTime = new Date();
-    outTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
-
-    // WHEN
-    boolean saveTicket = ticketDAOTest.saveTicket(ticket);
-
-    // THEN
-    assertFalse(saveTicket);
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    doNothing().when(ps).setInt(1, ticket.getParkingSpot().getId());
+    doNothing().when(ps).setString(2, ticket.getVehicleRegNumber());
+    doNothing().when(ps).setDouble(3, ticket.getPrice());
+    doNothing().when(ps).setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
+    doNothing().when(ps).setTimestamp(5,
+        (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
+    when(ps.execute()).thenReturn(true);
+    // When
+    boolean result = ticketDAO.saveTicket(ticket);
+    // Then
+    assertFalse(result);
+    verify(ps, times(1)).execute();
   }
 
   @Test
-  void getTicketTest() {
-    String str = "ABCDEF";
+  public void saveTicketKoShouldassertException() throws SQLException, ClassNotFoundException {
 
-    // GIVEN
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    doNothing().when(ps).setInt(1, ticket.getParkingSpot().getId());
+    doNothing().when(ps).setString(2, ticket.getVehicleRegNumber());
+    doNothing().when(ps).setDouble(3, ticket.getPrice());
+    doNothing().when(ps).setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
+    doNothing().when(ps).setTimestamp(5,
+        (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
+    when(ps.execute()).thenThrow(SQLException.class);
+    // When
+    ticketDAO.saveTicket(ticket);
+    // Then
+    assertThat(logcaptor.getErrorLogs().contains("Error fetching next available slot"));
+
+  }
+
+  @Test
+  public void getTicketOKTest() throws SQLException, ClassNotFoundException {
+
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    (ps).setString(1, vehicleRegNumber);
+    when(ps.executeQuery()).thenReturn(rs);
+    when(rs.next()).thenReturn(true);
+    doNothing().when(ps).setString(1, vehicleRegNumber);
+
+//    ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)),
+//        false);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setVehicleRegNumber(str);
+    ticket.setVehicleRegNumber(vehicleRegNumber);
+    (ticket).setId(rs.getInt(2));
+    (ticket).setPrice(rs.getDouble(3));
+    (ticket).setInTime(rs.getTimestamp(4));
+    (ticket).setOutTime(rs.getTimestamp(5));
 
-    // WHEN
-    boolean getTicket = ticketDAOTest.getTicket(str) != null;
+    // When
+    ticketDAO.getTicket(vehicleRegNumber);
 
-    // THEN
-    assertTrue(getTicket);
+    // Then
+    assertThat("TOTO").isEqualTo(ticket.getVehicleRegNumber());
+    verify(ps, times(1)).executeQuery();
+    verify(rs, times(1)).next();
+
   }
 
   @Test
-  void updateTicketTest() {
+  public void getTicketKoShouldassertException() throws SQLException, ClassNotFoundException {
 
-    // GIVEN
-    outTime = new Date();
-    ticket.setOutTime(outTime);
-    ticket.setPrice(1.5);
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    when(ps.executeQuery()).thenThrow(SQLException.class);
 
-    // WHEN
-    boolean updateTicket = ticketDAOTest.updateTicket(ticket);
+    // When
+    ticketDAO.getTicket(vehicleRegNumber);
 
-    // THEN
-    assertTrue(updateTicket);
+    // Then
+    assertThat(logcaptor.getErrorLogs().contains("Error fetching next available slot"));
   }
 
-  /*
-   * Check that a vehicle register number is for a recurring user
-   */
   @Test
-  void isRecurringTest() {
+  public void updateTicketOkShouldReturnFalse() throws SQLException, ClassNotFoundException {
 
-    // GIVEN
-    ticket.setVehicleRegNumber("ABCDEF");
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    doNothing().when(ps).setDouble(1, ticket.getPrice());
+    doNothing().when(ps).setTimestamp(2, new Timestamp(ticket.getOutTime().getTime()));
+    doNothing().when(ps).setInt(3, ticket.getId());
+    when(ps.execute()).thenReturn(true);
 
-    // WHEN
-    boolean isRecurring = ticketDAOTest.isRecurring(ticket.getVehicleRegNumber());
+    // When
+    boolean result = ticketDAO.updateTicket(ticket);
 
-    // THEN
-    assertFalse(isRecurring);
+    // Then
+    assertFalse(result);
+    verify(ps, times(1)).execute();
   }
 
-  /*
-   * Check if vehicle Reg Number is saved
-   */
   @Test
-  void isSavedTest() {
+  public void updateTicketKoShouldassertException() throws SQLException, ClassNotFoundException {
 
-    // GIVEN
-    ticket.setVehicleRegNumber("ABCDEF");
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    doNothing().when(ps).setDouble(1, ticket.getPrice());
+    doNothing().when(ps).setTimestamp(2, new Timestamp(ticket.getOutTime().getTime()));
+    doNothing().when(ps).setInt(3, ticket.getId());
+    when(ps.execute()).thenThrow(SQLException.class);
 
-    // WHEN
-    boolean isSaved = ticketDAOTest.isSaved(ticket.getVehicleRegNumber());
+    // When
+    ticketDAO.updateTicket(ticket);
 
-    // THEN
-    assertFalse(isSaved);
+    // Then
+    assertThat(logcaptor.getErrorLogs().contains("Error updating ticket info"));
+
   }
 
-  /*
-   * Check if vehicle is inside
-   */
   @Test
-  void vehicleInside() {
+  public void isRecurringOkShouldReturnFalse() throws SQLException, ClassNotFoundException {
 
-    // GIVEN
-    ticket.setOutTime(null);
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    when(ps.executeQuery()).thenReturn(rs);
+    when(rs.next()).thenReturn(true);
+    doNothing().when(ps).setString(1, vehicleRegNumber);
 
-    // WHEN
-    boolean vehicleInside = ticketDAOTest.vehicleInside(null);
+    // When
+    boolean result = ticketDAO.isRecurring(vehicleRegNumber);
 
-    // THEN
-    assertFalse(vehicleInside);
+    // Then
+    assertTrue(result);
+    verify(ps, times(1)).executeQuery();
+    verify(rs, times(1)).next();
   }
 
-  /*
-   * Check if vehicle is outside
-   */
   @Test
-  void vehicleOutside() {
+  public void isRecurringKoShouldassertException() throws SQLException, ClassNotFoundException {
 
-    // GIVEN
-    outTime = new Date();
-    ticket.setOutTime(outTime);
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    when(ps.executeQuery()).thenReturn(rs);
+    doNothing().when(ps).setString(1, vehicleRegNumber);
+    when(ps.executeQuery()).thenThrow(SQLException.class);
 
-    // WHEN
-    boolean vehicleOutside = ticketDAOTest.vehicleOutside(ticket.getVehicleRegNumber());
+    // When
+    ticketDAO.isRecurring(vehicleRegNumber);
 
-    // THEN
-    assertFalse(vehicleOutside);
+    // Then
+    assertThat(logcaptor.getErrorLogs()
+        .contains("Error checking vehicle reg number is for a recurring user"));
+
+  }
+
+  @Test
+  public void isSavedOkShouldReturnFalse() throws SQLException, ClassNotFoundException {
+
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    when(ps.executeQuery()).thenReturn(rs);
+    when(rs.next()).thenReturn(true);
+    doNothing().when(ps).setString(1, vehicleRegNumber);
+
+    // When
+    boolean result = ticketDAO.isSaved(vehicleRegNumber);
+
+    // Then
+    assertTrue(result);
+    verify(ps, times(1)).executeQuery();
+    verify(rs, times(1)).next();
+  }
+
+  @Test
+  public void isSavedKoShouldassertException() throws SQLException, ClassNotFoundException {
+
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    when(ps.executeQuery()).thenReturn(rs);
+    doNothing().when(ps).setString(1, vehicleRegNumber);
+    when(ps.executeQuery()).thenThrow(SQLException.class);
+
+    // When
+    ticketDAO.isSaved(vehicleRegNumber);
+
+    // Then
+    assertThat(logcaptor.getErrorLogs().contains("Error saving vehicle Reg Number"));
+
+  }
+
+  @Test
+  public void vehicleInsideOkShouldReturnFalse() throws SQLException, ClassNotFoundException {
+
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    when(ps.executeQuery()).thenReturn(rs);
+    when(rs.next()).thenReturn(true);
+    doNothing().when(ps).setString(1, vehicleRegNumber);
+
+    // When
+    boolean result = ticketDAO.vehicleInside(vehicleRegNumber);
+
+    // Then
+    assertTrue(result);
+    verify(ps, times(1)).executeQuery();
+    verify(rs, times(1)).next();
+  }
+
+  @Test
+  public void vehicleInsideKoShouldassertException() throws SQLException, ClassNotFoundException {
+
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    when(ps.executeQuery()).thenReturn(rs);
+    doNothing().when(ps).setString(1, vehicleRegNumber);
+    when(ps.executeQuery()).thenThrow(SQLException.class);
+
+    // When
+    ticketDAO.vehicleInside(vehicleRegNumber);
+
+    // Then
+    assertThat(
+        logcaptor.getErrorLogs().contains("Error checking vehicleRegNumber is already inside"));
+
+  }
+
+  @Test
+  public void vehicleOutsideOkShouldReturnFalse() throws SQLException, ClassNotFoundException {
+
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    when(ps.executeQuery()).thenReturn(rs);
+    when(rs.next()).thenReturn(true);
+    doNothing().when(ps).setString(1, vehicleRegNumber);
+
+    // When
+    boolean result = ticketDAO.vehicleOutside(vehicleRegNumber);
+
+    // Then
+    assertTrue(result);
+    verify(ps, times(1)).executeQuery();
+    verify(rs, times(1)).next();
+  }
+
+  @Test
+  public void vehicleOutsideKoShouldassertException() throws SQLException, ClassNotFoundException {
+
+    // Given
+    when(databaseConfig.getConnection()).thenReturn(con);
+    when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
+    when(ps.executeQuery()).thenReturn(rs);
+    doNothing().when(ps).setString(1, vehicleRegNumber);
+    when(ps.executeQuery()).thenThrow(SQLException.class);
+
+    // When
+    ticketDAO.vehicleOutside(vehicleRegNumber);
+
+    // Then
+    assertThat(
+        logcaptor.getErrorLogs().contains("Error checking vehicleRegNumber is already outside"));
+
   }
 
 }

@@ -5,7 +5,7 @@
 //import java.util.Date;
 //import java.util.Scanner;
 //
-//import org.junit.jupiter.api.BeforeAll;
+//import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //
 //import com.parkit.parkingsystem.model.ParkingSpot;
@@ -13,36 +13,32 @@
 //
 //class InputReaderUtilTest {
 //
-//  private int input;
-//  private InputReaderUtil InputReaderUtilTest;
+//  private InputReaderUtil inputReaderUtilTest;
 //  private static Scanner scan = new Scanner(System.in);
 //  private ParkingSpot parkingSpot;
 //  Ticket ticket = new Ticket();
 //
-//  @BeforeAll
-//  static void setUpBeforeClass() throws Exception {
-//    new InputReaderUtil();
+//  @BeforeEach
+//  private void setUpPerTest() {
+//    inputReaderUtilTest = new InputReaderUtil();
 //  }
 //
 //  @Test
 //  void readSelectionTest() {
 //
-//    // GIVEN
-//    input = Integer.parseInt(scan.nextLine());
+//    int input = Integer.parseInt(scan.nextLine());
 //    Date outTime = new Date();
 //    Date inTime = new Date();
-//    // Ticket ticket = new Ticket();
 //    ticket.setInTime(inTime);
 //    ticket.setOutTime(outTime);
 //    ticket.setParkingSpot(parkingSpot);
 //    ticket.setPrice(ticket.getPrice());
-//    // ticket.setVehicleRegNumber(vehicleRegNumber);
 //
 //    // WHEN
-//    InputReaderUtilTest.readSelection();
+//    inputReaderUtilTest.readSelection();
 //
 //    // THEN
-//    assertThat(Integer.parseInt(scan.nextLine())).isEqualTo(input);
+//    assertThat(inputReaderUtilTest.readSelection()).isEqualTo(input);
 //  }
 //
 //  @Test
@@ -54,10 +50,10 @@
 //    ticket.setVehicleRegNumber(vehicleRegNumber);
 //
 //    // WHEN
-//    InputReaderUtilTest.readVehicleRegistrationNumber();
+//    inputReaderUtilTest.readVehicleRegistrationNumber();
 //
 //    // THEN
-//    assertThat(scan.nextLine()).isEqualTo(vehicleRegNumber);
+//    assertThat(inputReaderUtilTest.readVehicleRegistrationNumber()).isEqualTo(vehicleRegNumber);
 //  }
 //
 //}

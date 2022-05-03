@@ -4,11 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.sql.SQLException;
 import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,10 +26,13 @@ import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 
+import nl.altindag.log.LogCaptor;
+
 @ExtendWith(MockitoExtension.class)
 class ParkingServiceTest {
 
   private ParkingService parkingServiceTest;
+  private static LogCaptor logcaptor;
 
   @Mock
   final Logger logger = LogManager.getLogger("ParkingService");
@@ -52,6 +53,8 @@ class ParkingServiceTest {
     ticket = new Ticket();
     ticket.setInTime(new Date(System.currentTimeMillis() - 60 * 60 * 1000));
     ticket.setVehicleRegNumber("ABCDEF");
+    logcaptor = LogCaptor.forName("TicketDAO");
+    logcaptor.setLogLevelToInfo();
   }
 
   @AfterEach
@@ -84,6 +87,7 @@ class ParkingServiceTest {
     verify(ticketDAO, Mockito.times(1)).isRecurring(any());
     verify(logger, Mockito.times(1)).error("Unable to process incoming vehicle");
     assertFalse(parkingSpot.isAvailable());
+    assertThat(logcaptor.getErrorLogs().contains("Unable to process incoming vehicle"));
   }
 
   @Test
@@ -105,19 +109,21 @@ class ParkingServiceTest {
   }
 
   @Test
-  void getNextParkingNumberIfAvailableTest() throws SQLException, Exception {
+  void getNextParkingNumberIfAvailableTest() {
 
     // GIVEN
     final ParkingSpot parkingSpot = new ParkingSpot(0, null, false);
     when(inputReaderUtil.readSelection()).thenReturn(1);
-    when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(2);
+    // when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(2);
+    when(inputReaderUtil.readSelection()).thenThrow(IllegalArgumentException.class);
 
     // WHEN
     parkingServiceTest.getNextParkingNumberIfAvailable();
 
     // THEN
-    verify(parkingSpotDAO, times(1)).getNextAvailableSlot(any(ParkingType.class));
+    // verify(parkingSpotDAO, times(1)).getNextAvailableSlot(any(ParkingType.class));
     assertFalse(parkingSpot.isAvailable());
+    assertThat(logcaptor.getErrorLogs().contains("Error fetching next available parking slot"));
   }
 
   @Test
@@ -160,6 +166,7 @@ class ParkingServiceTest {
     fareCalculatorService.calculateFare(ticket);
     inputReaderUtil.readVehicleRegistrationNumber();
     when(ticketDAO.getTicket(any())).thenReturn(ticket);
+    when(ticketDAO.updateTicket(ticket)).thenReturn(true);
     ticketDAO.updateTicket(ticket);
     logger.error("Unable to process exiting vehicle");
 
@@ -167,9 +174,9 @@ class ParkingServiceTest {
     parkingServiceTest.processExitingVehicle();
 
     // THEN
-    verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+    verify(parkingSpotDAO, Mockito.times(2)).updateParking(any(ParkingSpot.class));
     verify(ticketDAO, Mockito.times(2)).updateTicket(any(Ticket.class));
-    verify(fareCalculatorService, atLeast(1)).calculateFare(ticket);
+    verify(fareCalculatorService, Mockito.times(1)).calculateFare(any(Ticket.class));
     verify(inputReaderUtil, atLeast(1)).readVehicleRegistrationNumber();
     verify(logger, Mockito.times(1)).error("Unable to process exiting vehicle");
     assertThat(ticket.getVehicleRegNumber()).isEqualTo("ABCDEF");
