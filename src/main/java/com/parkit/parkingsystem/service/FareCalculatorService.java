@@ -6,7 +6,7 @@ import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
 
-  private TicketDAO ticketDAO;
+  private TicketDAO ticketDAO = new TicketDAO();
 
   public void calculateFare(Ticket ticket) {
     if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
@@ -48,14 +48,14 @@ public class FareCalculatorService {
   }
 
   public double checkDiscount(Ticket ticket) {
-    boolean isDiscount = false;
-    double discount = 0.95;
 
-    if (isDiscount) {
-      ticketDAO.isRecurring(ticket.getVehicleRegNumber());
-      ticket.setDiscount(discount);
+    if (ticketDAO.isRecurring(ticket.getVehicleRegNumber())) {
+      ticket.setPrice(ticket.getPrice() * 0.95);
+      // return 0.95;
 
+    } else {
+      ticket.setPrice(ticket.getPrice() * 1.0);
     }
-    return discount = 1;
+    return 1;
   }
 }

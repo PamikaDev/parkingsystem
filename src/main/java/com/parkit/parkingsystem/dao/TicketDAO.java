@@ -91,7 +91,7 @@ public class TicketDAO {
       ps.setTimestamp(2, new Timestamp(ticket.getOutTime().getTime()));
       ps.setInt(3, ticket.getId());
       ps.execute();
-      // return true;
+      return true;
 
     } catch (Exception ex) {
       logger.error("Error updating ticket info", ex);
@@ -150,7 +150,7 @@ public class TicketDAO {
   /*
    * check if vehicleRegNumber is already inside
    */
-  public boolean vehicleInside(String vehicleRegNumber) {
+  public boolean getVehicleInside(String vehicleRegNumber) {
     try (Connection con = dataBaseConfig.getConnection();
         PreparedStatement ps = con.prepareStatement(DBConstants.GET_INSIDE_VEHICLE)) {
       ps.setString(1, vehicleRegNumber);
@@ -169,7 +169,7 @@ public class TicketDAO {
   /*
    * check if vehicleRegNumber is already outside
    */
-  public boolean vehicleOutside(String vehicleRegNumber) {
+  public boolean getVehicleOutside(String vehicleRegNumber) {
     try (Connection con = dataBaseConfig.getConnection();
         PreparedStatement ps = con.prepareStatement(DBConstants.GET_OUTSIDE_VEHICLE)) {
       ps.setString(1, vehicleRegNumber);

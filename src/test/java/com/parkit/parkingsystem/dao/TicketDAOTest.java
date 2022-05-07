@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.junit.jupiter.api.AfterEach;
@@ -124,19 +125,17 @@ class TicketDAOTest {
     // Given
     when(databaseConfig.getConnection()).thenReturn(con);
     when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
-    (ps).setString(1, vehicleRegNumber);
+
     when(ps.executeQuery()).thenReturn(rs);
     when(rs.next()).thenReturn(true);
     doNothing().when(ps).setString(1, vehicleRegNumber);
+    when(rs.getInt(Mockito.anyInt())).thenReturn(1);
+    when(rs.getString(6)).thenReturn("CAR");
 
 //    ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)),
 //        false);
-    ticket.setParkingSpot(parkingSpot);
-    ticket.setVehicleRegNumber(vehicleRegNumber);
-    (ticket).setId(rs.getInt(2));
-    (ticket).setPrice(rs.getDouble(3));
-    (ticket).setInTime(rs.getTimestamp(4));
-    (ticket).setOutTime(rs.getTimestamp(5));
+    when(rs.getDouble(3)).thenReturn(1.5);
+    when(rs.getTimestamp(Mockito.anyInt())).thenReturn(Timestamp.valueOf(LocalDateTime.now()));
 
     // When
     ticketDAO.getTicket(vehicleRegNumber);
@@ -178,7 +177,7 @@ class TicketDAOTest {
     boolean result = ticketDAO.updateTicket(ticket);
 
     // Then
-    assertFalse(result);
+    assertTrue(result);
     verify(ps, times(1)).execute();
   }
 
@@ -287,7 +286,7 @@ class TicketDAOTest {
     doNothing().when(ps).setString(1, vehicleRegNumber);
 
     // When
-    boolean result = ticketDAO.vehicleInside(vehicleRegNumber);
+    boolean result = ticketDAO.getVehicleInside(vehicleRegNumber);
 
     // Then
     assertTrue(result);
@@ -306,7 +305,7 @@ class TicketDAOTest {
     when(ps.executeQuery()).thenThrow(SQLException.class);
 
     // When
-    ticketDAO.vehicleInside(vehicleRegNumber);
+    ticketDAO.getVehicleInside(vehicleRegNumber);
 
     // Then
     assertThat(
@@ -325,7 +324,7 @@ class TicketDAOTest {
     doNothing().when(ps).setString(1, vehicleRegNumber);
 
     // When
-    boolean result = ticketDAO.vehicleOutside(vehicleRegNumber);
+    boolean result = ticketDAO.getVehicleOutside(vehicleRegNumber);
 
     // Then
     assertTrue(result);
@@ -344,7 +343,7 @@ class TicketDAOTest {
     when(ps.executeQuery()).thenThrow(SQLException.class);
 
     // When
-    ticketDAO.vehicleOutside(vehicleRegNumber);
+    ticketDAO.getVehicleOutside(vehicleRegNumber);
 
     // Then
     assertThat(

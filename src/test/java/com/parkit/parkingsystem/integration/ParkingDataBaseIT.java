@@ -70,11 +70,11 @@ class ParkingDataBaseIT {
         ticketDAO);
     parkingService.processIncomingVehicle();
 
-    // TODO: Check that a ticket is actually saved in DB.
+    // Check that a ticket is actually saved in DB.
     final boolean saved = ticketDAO.isSaved("ABCDEF");
     assertFalse(saved);
 
-    // TODO: Check that Parking table is updated with availability
+    // Check that Parking table is updated with availability
     final boolean available = parkingSpot.isAvailable();
     assertFalse(available);
   }
@@ -89,7 +89,7 @@ class ParkingDataBaseIT {
     final Date date = new Date();
     final Date outTime = new Date();
 
-    // TODO: Check that the fare generated and out time are populated correctly in the database
+    // Check that the fare generated and out time are populated correctly in the database
     final double faregenerated = ticket.getPrice();
     ticket.setOutTime(outTime);
     final Date generatedTime = ticket.getOutTime();

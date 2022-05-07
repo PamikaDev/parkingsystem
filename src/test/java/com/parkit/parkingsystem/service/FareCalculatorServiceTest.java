@@ -138,18 +138,20 @@ class FareCalculatorServiceTest {
     inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
     final Date outTime = new Date();
     final ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-    double discount = 1;
+    double discount = 0.95;
 
     ticket.setInTime(inTime);
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setDiscount(discount);
 
     // WHEN
     fareCalculatorServiceTest.calculateFare(ticket);
+    TicketDAO ticketDAO = new TicketDAO();
+    if (ticketDAO.isRecurring(ticket.getVehicleRegNumber())) {
 
-    // THEN
-    assertThat(ticket.getPrice()).isEqualTo(Fare.CAR_RATE_PER_HOUR * ticket.getDiscount() * 0.5);
+      // THEN
+      assertThat(ticket.getPrice()).isEqualTo(Fare.CAR_RATE_PER_HOUR * discount * 0.5);
+    }
   }
 
   // 5% discount For recurring BIKE users
@@ -162,19 +164,22 @@ class FareCalculatorServiceTest {
     inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
     final Date outTime = new Date();
     final ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-    double discount = 1;
+    double discount = 0.95;
 
     ticket.setInTime(inTime);
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setDiscount(discount);
 
     // WHEN
     fareCalculatorServiceTest.calculateFare(ticket);
 
-    // THEN
-    assertThat(ticket.getPrice()).isEqualTo(Fare.BIKE_RATE_PER_HOUR * ticket.getDiscount() * 0.5);
+    TicketDAO ticketDAO = new TicketDAO();
+    if (ticketDAO.isRecurring(ticket.getVehicleRegNumber())) {
 
+      // THEN
+      assertThat(ticket.getPrice()).isEqualTo(Fare.BIKE_RATE_PER_HOUR * discount * 0.5);
+
+    }
   }
 
   @Test
