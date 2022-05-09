@@ -35,26 +35,19 @@ import nl.altindag.log.LogCaptor;
 class TicketDAOTest {
 
   // Ma classe à tester
-  TicketDAO ticketDAO;
-
-  Ticket ticket;
-
+  private TicketDAO ticketDAO;
+  private Ticket ticket;
   private static LogCaptor logcaptor;
 
   @Mock
   private DataBaseConfig databaseConfig;
-
   @Mock
   private Connection con;
-
   @Mock
   private PreparedStatement ps;
-
   @Mock
   private ResultSet rs;
-
   private String vehicleRegNumber = "TOTO";
-
   @Mock
   private ParkingSpot parkingSpot;
 
@@ -76,7 +69,6 @@ class TicketDAOTest {
 
   @AfterEach
   private void tearDownPerTest() {
-
   }
 
   @Test
@@ -92,8 +84,10 @@ class TicketDAOTest {
     doNothing().when(ps).setTimestamp(5,
         (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
     when(ps.execute()).thenReturn(true);
+
     // When
     boolean result = ticketDAO.saveTicket(ticket);
+
     // Then
     assertFalse(result);
     verify(ps, times(1)).execute();
@@ -112,8 +106,10 @@ class TicketDAOTest {
     doNothing().when(ps).setTimestamp(5,
         (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
     when(ps.execute()).thenThrow(SQLException.class);
+
     // When
     ticketDAO.saveTicket(ticket);
+
     // Then
     assertThat(logcaptor.getErrorLogs().contains("Error fetching next available slot"));
 
@@ -125,15 +121,11 @@ class TicketDAOTest {
     // Given
     when(databaseConfig.getConnection()).thenReturn(con);
     when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
-
     when(ps.executeQuery()).thenReturn(rs);
     when(rs.next()).thenReturn(true);
     doNothing().when(ps).setString(1, vehicleRegNumber);
     when(rs.getInt(Mockito.anyInt())).thenReturn(1);
     when(rs.getString(6)).thenReturn("CAR");
-
-//    ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)),
-//        false);
     when(rs.getDouble(3)).thenReturn(1.5);
     when(rs.getTimestamp(Mockito.anyInt())).thenReturn(Timestamp.valueOf(LocalDateTime.now()));
 
@@ -144,7 +136,6 @@ class TicketDAOTest {
     assertThat("TOTO").isEqualTo(ticket.getVehicleRegNumber());
     verify(ps, times(1)).executeQuery();
     verify(rs, times(1)).next();
-
   }
 
   @Test
@@ -197,7 +188,6 @@ class TicketDAOTest {
 
     // Then
     assertThat(logcaptor.getErrorLogs().contains("Error updating ticket info"));
-
   }
 
   @Test
@@ -235,7 +225,6 @@ class TicketDAOTest {
     // Then
     assertThat(logcaptor.getErrorLogs()
         .contains("Error checking vehicle reg number is for a recurring user"));
-
   }
 
   @Test

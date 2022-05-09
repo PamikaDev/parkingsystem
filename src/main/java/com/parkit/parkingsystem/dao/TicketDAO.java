@@ -152,7 +152,7 @@ public class TicketDAO {
    */
   public boolean getVehicleInside(String vehicleRegNumber) {
     try (Connection con = dataBaseConfig.getConnection();
-        PreparedStatement ps = con.prepareStatement(DBConstants.GET_INSIDE_VEHICLE)) {
+        PreparedStatement ps = con.prepareStatement(DBConstants.GET_INSIDE_OUTSIDE_VEHICLE)) {
       ps.setString(1, vehicleRegNumber);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
@@ -171,7 +171,7 @@ public class TicketDAO {
    */
   public boolean getVehicleOutside(String vehicleRegNumber) {
     try (Connection con = dataBaseConfig.getConnection();
-        PreparedStatement ps = con.prepareStatement(DBConstants.GET_OUTSIDE_VEHICLE)) {
+        PreparedStatement ps = con.prepareStatement(DBConstants.GET_INSIDE_OUTSIDE_VEHICLE)) {
       ps.setString(1, vehicleRegNumber);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
