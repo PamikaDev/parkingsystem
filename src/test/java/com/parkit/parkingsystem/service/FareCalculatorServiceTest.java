@@ -3,6 +3,7 @@ package com.parkit.parkingsystem.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 import java.util.Date;
 
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.parkit.parkingsystem.constants.Fare;
@@ -28,13 +30,14 @@ class FareCalculatorServiceTest {
   private FareCalculatorService fareCalculatorServiceTest;
   private Ticket ticket;
   private static LogCaptor logcaptor;
+
+  @Mock
   private static TicketDAO ticketDAO;
 
   @BeforeEach
   private void setUpPerTest() {
     fareCalculatorServiceTest = new FareCalculatorService();
     ticket = new Ticket();
-    ticketDAO = new TicketDAO();
     logcaptor = LogCaptor.forName("ParkingService");
     logcaptor.setLogLevelToInfo();
   }
@@ -61,7 +64,7 @@ class FareCalculatorServiceTest {
 
     // THEN
     assertThat(ticket.getPrice()).isEqualTo(Fare.CAR_RATE_PER_HOUR * 0.5);
-    assertThat(logcaptor.getErrorLogs().contains("Unkown Parking Type"));
+
   }
 
   @Test
@@ -81,7 +84,7 @@ class FareCalculatorServiceTest {
 
     // THEN
     assertThat(ticket.getPrice()).isEqualTo(Fare.BIKE_RATE_PER_HOUR * 0.5);
-    assertThat(logcaptor.getErrorLogs().contains("Unkown Parking Type"));
+
   }
 
   // Free car parking for first 30 minutes
@@ -124,6 +127,7 @@ class FareCalculatorServiceTest {
 
     // THEN
     assertThat(ticket.getPrice()).isZero();
+
   }
 
   // 5% discount For recurring CAR users
@@ -138,17 +142,17 @@ class FareCalculatorServiceTest {
     ticket.setInTime(inTime);
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setPrice(ticket.getPrice() * 0.95);
-    ticketDAO.isRecurring(ticket.getVehicleRegNumber());
-
+    ticket.setPrice(ticket.getPrice());
+    when(ticketDAO.isRecurring(ticket.getVehicleRegNumber())).thenReturn(false);
     // WHEN
     fareCalculatorServiceTest.calculateFare(ticket);
 
     // THEN
+    // verify(ticketDAO, Mockito.times(1)).isRecurring(ticket.getVehicleRegNumber());
     if (ticketDAO.isRecurring(ticket.getVehicleRegNumber())) {
       assertThat(ticket.getPrice()).isEqualTo(Fare.CAR_RATE_PER_HOUR * 0.5 * 0.95);
     } else {
-      assertThat(ticket.getPrice()).isEqualTo(Fare.CAR_RATE_PER_HOUR * 0.5 * 1);
+      assertThat(ticket.getPrice()).isEqualTo(Fare.CAR_RATE_PER_HOUR * 0.5);
     }
 
   }
@@ -166,17 +170,18 @@ class FareCalculatorServiceTest {
     ticket.setInTime(inTime);
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setPrice(ticket.getPrice() * 0.95);
-    ticketDAO.isRecurring(ticket.getVehicleRegNumber());
+    ticket.setPrice(ticket.getPrice());
+    when(ticketDAO.isRecurring(ticket.getVehicleRegNumber())).thenReturn(false);
 
     // WHEN
     fareCalculatorServiceTest.calculateFare(ticket);
 
     // THEN
+    // verify(ticketDAO, Mockito.times(1)).isRecurring(ticket.getVehicleRegNumber());
     if (ticketDAO.isRecurring(ticket.getVehicleRegNumber())) {
       assertThat(ticket.getPrice()).isEqualTo(Fare.BIKE_RATE_PER_HOUR * 0.5 * 0.95);
     } else {
-      assertThat(ticket.getPrice()).isEqualTo(Fare.BIKE_RATE_PER_HOUR * 0.5 * 1);
+      assertThat(ticket.getPrice()).isEqualTo(Fare.BIKE_RATE_PER_HOUR * 0.5);
     }
 
   }
@@ -195,7 +200,7 @@ class FareCalculatorServiceTest {
 
     // WHEN
     assertThrows(NullPointerException.class, () -> fareCalculatorServiceTest.calculateFare(ticket));
-
+    assertThat(logcaptor.getErrorLogs().contains("Unkown Parking Type"));
   }
 
   @Test

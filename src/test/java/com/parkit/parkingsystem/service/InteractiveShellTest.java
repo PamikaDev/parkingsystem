@@ -1,53 +1,72 @@
-//package com.parkit.parkingsystem.service;
-//
-//import static org.junit.jupiter.api.Assertions.assertTrue;
-//
-//import java.util.Date;
-//
-//import org.junit.jupiter.api.AfterAll;
-//import org.junit.jupiter.api.BeforeAll;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//
-//import com.parkit.parkingsystem.model.ParkingSpot;
-//import com.parkit.parkingsystem.model.Ticket;
-//
-//@ExtendWith(MockitoExtension.class)
-//class InteractiveShellTest {
-//
-//  @Mock
-//  private static ParkingService parkingServiceTest;
-//  @Mock
-//  private ParkingSpot parkingSpot;
-//
-//  @BeforeAll
-//  private static void setUp() {
-//    new InteractiveShell();
-//  }
-//
-//  @AfterAll
-//  public static void tearDown() {
-//  }
-//
-//  @Test
-//  void loadInterfaceTest() throws Exception {
-//    // GIVEN
-//    boolean continueApp = true;
-//    Date outTime = new Date();
-//    Date inTime = new Date();
-//    Ticket ticket = new Ticket();
-//    ticket.setInTime(inTime);
-//    ticket.setOutTime(outTime);
-//    ticket.setParkingSpot(parkingSpot);
-//    ticket.setPrice(ticket.getPrice());
-//
-//    // WHEN
-//    InteractiveShell.loadInterface();
-//
-//    // THEN
-//    assertTrue(continueApp);
-//  }
-//
-//}
+package com.parkit.parkingsystem.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.parkit.parkingsystem.dao.ParkingSpotDAO;
+import com.parkit.parkingsystem.dao.TicketDAO;
+import com.parkit.parkingsystem.util.InputReaderUtil;
+
+import nl.altindag.log.LogCaptor;
+
+@ExtendWith(MockitoExtension.class)
+class InteractiveShellTest {
+
+  private InteractiveShell interactiveShellTest;
+  private static LogCaptor logcaptor;
+
+  @Mock
+  private ParkingService parkingService;
+
+  @Mock
+  private ParkingSpotDAO parkingSpotDAO;
+  @Mock
+  private InputReaderUtil inputReaderUtil;
+  @Mock
+  private TicketDAO ticketDAO;
+
+  public InteractiveShell getInteractiveShellTest() {
+    return interactiveShellTest;
+  }
+
+  public void setInteractiveShellTest(InteractiveShell interactiveShellTest) {
+    this.interactiveShellTest = interactiveShellTest;
+  }
+
+  @BeforeAll
+  private static void setUp() {
+    new InteractiveShell();
+  }
+
+  @BeforeEach
+  private void setUpPerTest() {
+    setInteractiveShellTest(new InteractiveShell());
+    logcaptor = LogCaptor.forName("ParkingService");
+    logcaptor.setLogLevelToInfo();
+  }
+
+  @AfterEach
+  public void tearDownPerTest() {
+    setInteractiveShellTest(null);
+  }
+
+  @Test
+  void loadInterfaceTest() {
+    inputReaderUtil.readSelection();
+    InteractiveShell.loadInterface();
+  }
+
+  @Test
+  void loadInterfaceKoShouldassertException() {
+    assertThat(logcaptor.getErrorLogs()
+        .contains("Unsupported option. Please enter a number corresponding to the provided menu"));
+  }
+
+}
