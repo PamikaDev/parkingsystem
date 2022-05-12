@@ -93,9 +93,6 @@ class ParkingDataBaseIT {
     final double faregenerated = ticket.getPrice();
     ticket.setOutTime(outTime);
     final Date generatedTime = ticket.getOutTime();
-//    assertEquals(generatedTime, date);
-//    assertEquals(0.0, faregenerated);
-
     assertFalse(generatedTime.before(date));
     assertEquals(0.0, faregenerated);
   }

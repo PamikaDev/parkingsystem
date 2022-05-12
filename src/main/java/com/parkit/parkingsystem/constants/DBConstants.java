@@ -11,6 +11,10 @@ public class DBConstants {
 
   public static final String GET_SAVED_TICKET = "select VEHICLE_REG_NUMBER from ticket where VEHICLE_REG_NUMBER=? and OUT_TIME IS NOT NULL";
   public static final String GET_RECURRING_VEHICLE = "select VEHICLE_REG_NUMBER from ticket where VEHICLE_REG_NUMBER=? and OUT_TIME IS NOT NULL";
-  public static final String GET_INSIDE_OUTSIDE_VEHICLE = "select vehicle_reg_number from ticket where vehicle_reg_number=? and OUT_TIME IS NOT NULL and OUT_TIME IS NULL";
+  public static final String GET_INSIDE_VEHICLE = "select vehicle_reg_number from ticket where vehicle_reg_number=? and OUT_TIME IS NULL order by IN_TIME desc limit 1";
+  public static final String GET_OUTSIDE_VEHICLE = "select vehicle_reg_number from ticket where vehicle_reg_number=? and OUT_TIME IS NOT NULL order by IN_TIME desc limit 1";
+
+  // public static final String GET_INSIDE_OUTSIDE_VEHICLE = "select vehicle_reg_number from ticket
+  // where vehicle_reg_number=? and OUT_TIME IS NOT NULL and OUT_TIME IS NULL";
 
 }
