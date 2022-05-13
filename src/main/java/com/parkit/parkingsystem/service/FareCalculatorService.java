@@ -12,9 +12,8 @@ public class FareCalculatorService {
     }
 
     /**
-     * STORY#1 et #2 : Free 30-min parking + discount 5%
-     *
-     * getTime() is in milliseconds and type of getTime() is long
+     * STORY#1 et #2 : Free 30-min parking + discount 5% getTime() is in milliseconds and type of
+     * getTime() is long
      */
     // Fix the code to make the unit tests pass
     long inHour = ticket.getInTime().getTime();

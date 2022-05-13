@@ -20,7 +20,7 @@ public class DataBasePrepareService {
       connection.prepareStatement("truncate table ticket").execute();
 
     } catch (final Exception e) {
-      e.printStackTrace();
+      // e.printStackTrace();
     } finally {
       dataBaseTestConfig.closeConnection(connection);
     }

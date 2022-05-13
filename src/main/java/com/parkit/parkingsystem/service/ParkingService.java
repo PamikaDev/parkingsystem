@@ -51,6 +51,7 @@ public class ParkingService {
           System.out.println(
               "Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount. ");
           logger.info("L'utilisateur est recurrent");
+
         }
 
         // assign parking space and mark false availability
@@ -145,12 +146,10 @@ public class ParkingService {
         System.out.println("Please pay the parking fare:" + ticket.getPrice());
         System.out.println("Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber()
             + " is:" + outTime);
+
       } else {
         System.out.println("Unable to update ticket information. Error occurred");
       }
-
-      // fareCalculatorService.calculateFare(ticket);
-
     } catch (Exception e) {
       logger.error("Unable to process exiting vehicle", e);
     }

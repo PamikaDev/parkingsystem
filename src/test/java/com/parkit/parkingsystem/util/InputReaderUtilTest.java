@@ -9,7 +9,7 @@ import nl.altindag.log.LogCaptor;
 
 class InputReaderUtilTest {
 
-  private InputReaderUtil inputReaderUtilTest;
+  private InputReaderUtil inputReaderUtilTest = new InputReaderUtil();
   // private static Scanner scan = new Scanner(System.in);
   private static LogCaptor logcaptor;
 
@@ -22,6 +22,7 @@ class InputReaderUtilTest {
 
   @Test
   void readSelectionTest() {
+
     inputReaderUtilTest.readSelection();
     assertThat(inputReaderUtilTest.readSelection()).isEqualTo(-1);
   }

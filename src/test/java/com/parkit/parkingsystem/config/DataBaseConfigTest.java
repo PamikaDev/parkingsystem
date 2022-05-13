@@ -1,6 +1,5 @@
 package com.parkit.parkingsystem.config;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -32,24 +31,21 @@ class DataBaseConfigTest {
   private ResultSet rs;
 
   @BeforeEach
-  void setUpPerTest() throws Exception {
+  void setUpPerTest() throws SQLException {
     dataBaseConfigTest = new DataBaseConfig();
-    logcaptor = LogCaptor.forName("TicketDAO");
+    logcaptor = LogCaptor.forName("DataBaseConfig");
     logcaptor.setLogLevelToInfo();
+
   }
 
   @AfterEach
-  void tearDownPerTest() throws Exception {
+  void tearDownPerTest() throws SQLException {
     dataBaseConfigTest = null;
   }
 
   @Test
   void getConnectionTest() throws ClassNotFoundException, SQLException {
     dataBaseConfigTest.getConnection();
-  }
-
-  @Test
-  void getConnectionKOShouldassertException() {
   }
 
   @Test
@@ -60,8 +56,9 @@ class DataBaseConfigTest {
 
   @Test
   void closeConnectionKoShouldassertException() throws SQLException {
-
-    assertThat(logcaptor.getErrorLogs().contains("Error while closing connection"));
+    con = null;
+    dataBaseConfigTest.closeConnection(con);
+    // assertThat(logcaptor.getErrorLogs().contains("Error while closing connection"));
   }
 
   @Test
@@ -72,7 +69,9 @@ class DataBaseConfigTest {
 
   @Test
   void closePreparedStatementKoShouldassertException() throws SQLException {
-    assertThat(logcaptor.getErrorLogs().contains("Error while closing prepared statement"));
+    ps = null;
+    dataBaseConfigTest.closePreparedStatement(ps);
+    // assertThat(logcaptor.getErrorLogs().contains("Error while closing prepared statement"));
   }
 
   @Test
@@ -83,7 +82,9 @@ class DataBaseConfigTest {
 
   @Test
   void closeResultSetKoShouldassertException() throws SQLException {
-    assertThat(logcaptor.getErrorLogs().contains("Error while closing result set"));
+    rs = null;
+    dataBaseConfigTest.closeResultSet(rs);
+    // assertThat(logcaptor.getErrorLogs().contains("Error while closing result set"));
   }
 
 }
