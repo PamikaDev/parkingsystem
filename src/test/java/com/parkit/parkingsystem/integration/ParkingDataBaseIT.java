@@ -89,7 +89,8 @@ class ParkingDataBaseIT {
     final Date date = new Date();
     final Date outTime = new Date();
 
-    // Check that the fare generated and out time are populated correctly in the database
+    // Check that the fare generated and out time are populated correctly in the database.
+
     final double faregenerated = ticket.getPrice();
     ticket.setOutTime(outTime);
     final Date generatedTime = ticket.getOutTime();

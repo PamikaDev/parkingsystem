@@ -41,6 +41,7 @@ class ParkingSpotDAOTest {
       throws ClassNotFoundException, FileNotFoundException, SQLException, IOException {
     con = dataBaseTestConfig.getConnection();
     logger.error("Error connecting to data base");
+
   }
 
   @AfterEach

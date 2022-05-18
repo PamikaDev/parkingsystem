@@ -38,6 +38,7 @@ class TicketDAOTest {
   private TicketDAO ticketDAO;
   private Ticket ticket;
   private static LogCaptor logcaptor;
+  private String vehicleRegNumber = "TOTO";
 
   @Mock
   private DataBaseConfig databaseConfig;
@@ -47,7 +48,6 @@ class TicketDAOTest {
   private PreparedStatement ps;
   @Mock
   private ResultSet rs;
-  private String vehicleRegNumber = "TOTO";
   @Mock
   private ParkingSpot parkingSpot;
 

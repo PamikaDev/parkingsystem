@@ -1,5 +1,6 @@
 package com.parkit.parkingsystem.config;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -31,21 +32,24 @@ class DataBaseConfigTest {
   private ResultSet rs;
 
   @BeforeEach
-  void setUpPerTest() throws SQLException {
+  void setUpPerTest() throws Exception {
     dataBaseConfigTest = new DataBaseConfig();
-    logcaptor = LogCaptor.forName("DataBaseConfig");
+    logcaptor = LogCaptor.forName("TicketDAO");
     logcaptor.setLogLevelToInfo();
-
   }
 
   @AfterEach
-  void tearDownPerTest() throws SQLException {
+  void tearDownPerTest() throws Exception {
     dataBaseConfigTest = null;
   }
 
   @Test
   void getConnectionTest() throws ClassNotFoundException, SQLException {
     dataBaseConfigTest.getConnection();
+  }
+
+  @Test
+  void getConnectionKOShouldassertException() {
   }
 
   @Test
@@ -56,9 +60,8 @@ class DataBaseConfigTest {
 
   @Test
   void closeConnectionKoShouldassertException() throws SQLException {
-    con = null;
     dataBaseConfigTest.closeConnection(con);
-    // assertThat(logcaptor.getErrorLogs().contains("Error while closing connection"));
+    assertThat(logcaptor.getErrorLogs().contains("Error while closing connection"));
   }
 
   @Test
@@ -69,9 +72,7 @@ class DataBaseConfigTest {
 
   @Test
   void closePreparedStatementKoShouldassertException() throws SQLException {
-    ps = null;
-    dataBaseConfigTest.closePreparedStatement(ps);
-    // assertThat(logcaptor.getErrorLogs().contains("Error while closing prepared statement"));
+    assertThat(logcaptor.getErrorLogs().contains("Error while closing prepared statement"));
   }
 
   @Test
@@ -82,9 +83,7 @@ class DataBaseConfigTest {
 
   @Test
   void closeResultSetKoShouldassertException() throws SQLException {
-    rs = null;
-    dataBaseConfigTest.closeResultSet(rs);
-    // assertThat(logcaptor.getErrorLogs().contains("Error while closing result set"));
+    assertThat(logcaptor.getErrorLogs().contains("Error while closing result set"));
   }
 
 }
