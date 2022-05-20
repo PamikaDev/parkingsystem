@@ -1,9 +1,9 @@
 package com.parkit.parkingsystem.dao;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,16 +18,14 @@ public class ParkingSpotDAO {
 
   private DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
-  public DataBaseConfig getDataBaseConfig() {
-    return dataBaseConfig;
-  }
-
   public void setDataBaseConfig(DataBaseConfig dataBaseConfig) {
     this.dataBaseConfig = dataBaseConfig;
   }
 
-  public int getNextAvailableSlot(ParkingType parkingType) throws Exception {
+  public int getNextAvailableSlot(ParkingType parkingType)
+      throws SQLException, ClassNotFoundException {
     int result = -1;
+
     try (Connection con = dataBaseConfig.getConnection();
         PreparedStatement ps = con.prepareStatement(DBConstants.GET_NEXT_PARKING_SPOT)) {
 
@@ -37,20 +35,22 @@ public class ParkingSpotDAO {
         result = rs.getInt(1);
       }
 
+    } catch (Exception ex) {
+      logger.error("Error fetching next available slot", ex);
     } finally {
       dataBaseConfig.closeResultSet(null);
     }
     return result;
   }
 
-  public boolean updateParking(ParkingSpot parkingSpot) throws ClassNotFoundException, IOException {
+  public boolean updateParking(ParkingSpot parkingSpot) {
     try (Connection con = dataBaseConfig.getConnection();
         PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_PARKING_SPOT)) {
-
       ps.setBoolean(1, parkingSpot.isAvailable());
       ps.setInt(2, parkingSpot.getId());
       int updateRowCount = ps.executeUpdate();
       return (updateRowCount == 1);
+
     } catch (Exception ex) {
       logger.error("Error updating parking info", ex);
     } finally {

@@ -62,10 +62,8 @@ public class TicketDAO {
         ticket.setInTime(rs.getTimestamp(4));
         ticket.setOutTime(rs.getTimestamp(5));
       }
-
       dataBaseConfig.closeResultSet(rs);
       dataBaseConfig.closePreparedStatement(ps);
-
     } catch (Exception ex) {
       logger.error("Error fetching next available slot", ex);
     } finally {
@@ -77,7 +75,6 @@ public class TicketDAO {
 
   public boolean updateTicket(Ticket ticket) {
     Connection con = null;
-
     try {
       con = dataBaseConfig.getConnection();
       PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_TICKET);
@@ -137,9 +134,7 @@ public class TicketDAO {
     } finally {
       dataBaseConfig.closeConnection(con);
     }
-
     return false;
-
   }
 
   /*

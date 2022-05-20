@@ -35,7 +35,7 @@ import nl.altindag.log.LogCaptor;
 class TicketDAOTest {
 
   // Ma classe à tester
-  private TicketDAO ticketDAO;
+  private TicketDAO ticketDAOTest;
   private Ticket ticket;
   private static LogCaptor logcaptor;
   private String vehicleRegNumber = "TOTO";
@@ -57,14 +57,14 @@ class TicketDAOTest {
     logcaptor.setLogLevelToInfo();
 
     ticket = new Ticket();
-    ticketDAO = new TicketDAO();
+    ticketDAOTest = new TicketDAO();
     ticket.setId(1);
     ticket.setVehicleRegNumber(vehicleRegNumber);
     ticket.setParkingSpot(new ParkingSpot(1, ParkingType.CAR, true));
     ticket.setPrice(2);
     ticket.setInTime(new Date());
     ticket.setOutTime(new Date());
-    ticketDAO.setDataBaseConfig(databaseConfig);
+    ticketDAOTest.setDataBaseConfig(databaseConfig);
   }
 
   @AfterEach
@@ -86,7 +86,7 @@ class TicketDAOTest {
     when(ps.execute()).thenReturn(true);
 
     // When
-    boolean result = ticketDAO.saveTicket(ticket);
+    boolean result = ticketDAOTest.saveTicket(ticket);
 
     // Then
     assertFalse(result);
@@ -108,7 +108,7 @@ class TicketDAOTest {
     when(ps.execute()).thenThrow(SQLException.class);
 
     // When
-    ticketDAO.saveTicket(ticket);
+    ticketDAOTest.saveTicket(ticket);
 
     // Then
     assertThat(logcaptor.getErrorLogs().contains("Error fetching next available slot"));
@@ -130,7 +130,7 @@ class TicketDAOTest {
     when(rs.getTimestamp(Mockito.anyInt())).thenReturn(Timestamp.valueOf(LocalDateTime.now()));
 
     // When
-    ticketDAO.getTicket(vehicleRegNumber);
+    ticketDAOTest.getTicket(vehicleRegNumber);
 
     // Then
     assertThat("TOTO").isEqualTo(ticket.getVehicleRegNumber());
@@ -147,7 +147,7 @@ class TicketDAOTest {
     when(ps.executeQuery()).thenThrow(SQLException.class);
 
     // When
-    ticketDAO.getTicket(vehicleRegNumber);
+    ticketDAOTest.getTicket(vehicleRegNumber);
 
     // Then
     assertThat(logcaptor.getErrorLogs().contains("Error fetching next available slot"));
@@ -165,7 +165,7 @@ class TicketDAOTest {
     when(ps.execute()).thenReturn(true);
 
     // When
-    boolean result = ticketDAO.updateTicket(ticket);
+    boolean result = ticketDAOTest.updateTicket(ticket);
 
     // Then
     assertTrue(result);
@@ -184,7 +184,7 @@ class TicketDAOTest {
     when(ps.execute()).thenThrow(SQLException.class);
 
     // When
-    ticketDAO.updateTicket(ticket);
+    ticketDAOTest.updateTicket(ticket);
 
     // Then
     assertThat(logcaptor.getErrorLogs().contains("Error updating ticket info"));
@@ -201,7 +201,7 @@ class TicketDAOTest {
     doNothing().when(ps).setString(1, vehicleRegNumber);
 
     // When
-    boolean result = ticketDAO.isRecurring(vehicleRegNumber);
+    boolean result = ticketDAOTest.isRecurring(vehicleRegNumber);
 
     // Then
     assertTrue(result);
@@ -220,7 +220,7 @@ class TicketDAOTest {
     when(ps.executeQuery()).thenThrow(SQLException.class);
 
     // When
-    ticketDAO.isRecurring(vehicleRegNumber);
+    ticketDAOTest.isRecurring(vehicleRegNumber);
 
     // Then
     assertThat(logcaptor.getErrorLogs()
@@ -238,7 +238,7 @@ class TicketDAOTest {
     doNothing().when(ps).setString(1, vehicleRegNumber);
 
     // When
-    boolean result = ticketDAO.isSaved(vehicleRegNumber);
+    boolean result = ticketDAOTest.isSaved(vehicleRegNumber);
 
     // Then
     assertTrue(result);
@@ -257,7 +257,7 @@ class TicketDAOTest {
     when(ps.executeQuery()).thenThrow(SQLException.class);
 
     // When
-    ticketDAO.isSaved(vehicleRegNumber);
+    ticketDAOTest.isSaved(vehicleRegNumber);
 
     // Then
     assertThat(logcaptor.getErrorLogs().contains("Error saving vehicle Reg Number"));
@@ -275,7 +275,7 @@ class TicketDAOTest {
     doNothing().when(ps).setString(1, vehicleRegNumber);
 
     // When
-    boolean result = ticketDAO.getVehicleInside(vehicleRegNumber);
+    boolean result = ticketDAOTest.getVehicleInside(vehicleRegNumber);
 
     // Then
     assertTrue(result);
@@ -294,7 +294,7 @@ class TicketDAOTest {
     when(ps.executeQuery()).thenThrow(SQLException.class);
 
     // When
-    ticketDAO.getVehicleInside(vehicleRegNumber);
+    ticketDAOTest.getVehicleInside(vehicleRegNumber);
 
     // Then
     assertThat(
@@ -313,7 +313,7 @@ class TicketDAOTest {
     doNothing().when(ps).setString(1, vehicleRegNumber);
 
     // When
-    boolean result = ticketDAO.getVehicleOutside(vehicleRegNumber);
+    boolean result = ticketDAOTest.getVehicleOutside(vehicleRegNumber);
 
     // Then
     assertTrue(result);
@@ -332,7 +332,7 @@ class TicketDAOTest {
     when(ps.executeQuery()).thenThrow(SQLException.class);
 
     // When
-    ticketDAO.getVehicleOutside(vehicleRegNumber);
+    ticketDAOTest.getVehicleOutside(vehicleRegNumber);
 
     // Then
     assertThat(

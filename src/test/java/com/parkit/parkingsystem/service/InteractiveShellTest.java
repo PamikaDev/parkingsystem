@@ -1,6 +1,7 @@
 //package com.parkit.parkingsystem.service;
 //
 //import static org.assertj.core.api.Assertions.assertThat;
+//import static org.mockito.Mockito.when;
 //
 //import org.junit.jupiter.api.AfterEach;
 //import org.junit.jupiter.api.BeforeAll;
@@ -59,8 +60,19 @@
 //
 //  @Test
 //  void loadInterfaceTest() {
-//    inputReaderUtil.readSelection();
-//    InteractiveShell.loadInterface();
+//
+//    boolean continueApp = true;
+//    while (continueApp) {
+//      int option = inputReaderUtil.readSelection();
+//      when(inputReaderUtil.readSelection()).thenReturn(option);
+//
+//      InteractiveShell.loadInterface();
+//
+//      assertThat(inputReaderUtil.readSelection()).isEqualTo(option);
+//      continueApp = false;
+//      break;
+//    }
+//
 //  }
 //
 //  @Test
