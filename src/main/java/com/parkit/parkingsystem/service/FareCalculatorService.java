@@ -5,7 +5,13 @@ import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
-  private double discount;
+  // private double discount = 0.95;
+
+  private TicketDAO ticketDAO = new TicketDAO();
+
+  public void setTicketDAO(TicketDAO ticketDAO) {
+    this.ticketDAO = ticketDAO;
+  }
 
   public void calculateFare(Ticket ticket) {
     if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
@@ -21,7 +27,7 @@ public class FareCalculatorService {
     // get duration is in milliseconds and type of duration must be double
     double duration = (double) outHour - inHour;
     double parkingTime = (duration - 30 * 60 * 1000) / (60 * 60 * 1000);
-    discount = checkDiscount(ticket);
+    double discount = checkDiscount(ticket);
     if (duration > 30 * 60 * 1000) {
       switch (ticket.getParkingSpot().getParkingType()) {
       case CAR: {
@@ -49,13 +55,12 @@ public class FareCalculatorService {
    * @return
    */
   public double checkDiscount(Ticket ticket) {
-    TicketDAO ticketDAO = new TicketDAO();
     String vehicleRegNumber = ticket.getVehicleRegNumber();
-    if (ticketDAO.isRecurring(vehicleRegNumber)) {
-      discount = 0.95;
+    boolean isrecurring = ticketDAO.isRecurring(vehicleRegNumber);
+    if (isrecurring) {
+      return 0.95;
     } else {
-      discount = 1;
+      return 1;
     }
-    return discount;
   }
 }

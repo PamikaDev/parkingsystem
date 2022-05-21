@@ -1,9 +1,9 @@
 package com.parkit.parkingsystem.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -146,6 +146,7 @@ class FareCalculatorServiceTest {
 
     // GIVEN
     Date inTime = new Date();
+
     inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
     Date outTime = new Date();
     ticket.setInTime(inTime);
@@ -153,16 +154,15 @@ class FareCalculatorServiceTest {
     ticket.setParkingSpot(parkingSpot);
     ticket.setParkingType(parkingType);
     String vehicleRegNumber = "ABCDEF";
-    ticketDAO.isRecurring(vehicleRegNumber);
+    ticket.setVehicleRegNumber(vehicleRegNumber);
     when(ticketDAO.isRecurring(Mockito.anyString())).thenReturn(true);
+    fareCalculatorServiceTest.setTicketDAO(ticketDAO);
 
     // WHEN
-    fareCalculatorServiceTest.checkDiscount(ticket);
+    double result = fareCalculatorServiceTest.checkDiscount(ticket);
 
     // THEN
-    verify(ticketDAO, Mockito.times(1)).isRecurring(Mockito.anyString());
-    assertTrue(ticketDAO.isRecurring(vehicleRegNumber));
-    // assertThat(fareCalculatorServiceTest.checkDiscount(ticket)).isEqualTo(à.95);
+    assertEquals(0.95, result);
 
   }
 
@@ -177,12 +177,12 @@ class FareCalculatorServiceTest {
     when(ticketDAO.isRecurring(Mockito.anyString())).thenReturn(false);
 
     // WHEN
-    fareCalculatorServiceTest.checkDiscount(ticket);
+    double result = fareCalculatorServiceTest.checkDiscount(ticket);
 
     // THEN
     verify(ticketDAO, Mockito.times(1)).isRecurring(Mockito.anyString());
     assertFalse(ticketDAO.isRecurring(vehicleRegNumber));
-    assertThat(fareCalculatorServiceTest.checkDiscount(ticket)).isEqualTo(1);
+    assertThat(result).isEqualTo(1);
 
   }
 
