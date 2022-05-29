@@ -33,7 +33,7 @@ class ParkingServiceTest {
   private ParkingService parkingServiceTest;
   private Ticket ticket;
   private static LogCaptor logcaptor;
-  // @Mock
+  @Mock
   private static ParkingSpot parkingSpot;
 
   @Mock
@@ -87,7 +87,6 @@ class ParkingServiceTest {
   void processIncomingVehicleKOShouldassertException() throws Exception, IOException {
 
     // GIVEN
-
     when(inputReaderUtil.readSelection()).thenReturn(1);
     when(parkingSpotDAO.getNextAvailableSlot(Mockito.any(ParkingType.class))).thenReturn(1);
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn(null);
@@ -98,6 +97,28 @@ class ParkingServiceTest {
     parkingServiceTest.processIncomingVehicle();
 
     // THEN
+    assertThat(logcaptor.getErrorLogs().contains("Unable to process exiting vehicle"));
+
+  }
+
+  @Test
+  void processIncomingVehicleKOShouldReturnFalse() throws Exception, IOException {
+
+    // GIVEN
+    parkingSpot.setId(0);
+    ticket.setParkingSpot(null);
+
+    when(inputReaderUtil.readSelection()).thenReturn(1);
+    when(parkingSpotDAO.getNextAvailableSlot(Mockito.any(ParkingType.class))).thenReturn(1);
+    when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn(null);
+    when(parkingSpotDAO.updateParking(Mockito.any(ParkingSpot.class))).thenReturn(false);
+    when(ticketDAO.saveTicket(Mockito.any(Ticket.class))).thenReturn(false);
+
+    // WHEN
+    parkingServiceTest.processIncomingVehicle();
+
+    // THEN
+    assertFalse(parkingSpot.isAvailable());
     assertThat(logcaptor.getErrorLogs().contains("Unable to process exiting vehicle"));
 
   }
@@ -180,7 +201,6 @@ class ParkingServiceTest {
   void getVehichleRegNumberTest() throws Exception {
 
     // GIVEN
-
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
     ticket.setVehicleRegNumber(inputReaderUtil.readVehicleRegistrationNumber());
 
@@ -321,6 +341,7 @@ class ParkingServiceTest {
 
     // GIVEN
     ticket.setParkingSpot(parkingSpot);
+    parkingSpot.setAvailable(false);
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenThrow(Exception.class);
 
     // WHEN

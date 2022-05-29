@@ -77,6 +77,7 @@ class ParkingDataBaseIT {
     // Check that Parking table is updated with availability
     final boolean available = parkingSpot.isAvailable();
     assertFalse(available);
+
   }
 
   @Test
@@ -90,7 +91,6 @@ class ParkingDataBaseIT {
     final Date outTime = new Date();
 
     // Check that the fare generated and out time are populated correctly in the database.
-
     final double faregenerated = ticket.getPrice();
     ticket.setOutTime(outTime);
     final Date generatedTime = ticket.getOutTime();

@@ -44,6 +44,7 @@
 //  @BeforeAll
 //  private static void setUp() {
 //    new InteractiveShell();
+//  mock = EasyMock.createMock(InteractiveShell.class);
 //  }
 //
 //  @BeforeEach

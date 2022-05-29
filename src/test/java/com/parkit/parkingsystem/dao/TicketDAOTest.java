@@ -50,12 +50,13 @@ class TicketDAOTest {
   private ResultSet rs;
   @Mock
   private ParkingSpot parkingSpot;
+  private Date outTime;
 
   @BeforeEach
   public void setUpPerTest() {
     logcaptor = LogCaptor.forName("TicketDAO");
     logcaptor.setLogLevelToInfo();
-
+    outTime = new Date();
     ticket = new Ticket();
     ticketDAOTest = new TicketDAO();
     ticket.setId(1);
@@ -81,16 +82,15 @@ class TicketDAOTest {
     doNothing().when(ps).setString(2, ticket.getVehicleRegNumber());
     doNothing().when(ps).setDouble(3, ticket.getPrice());
     doNothing().when(ps).setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
-    doNothing().when(ps).setTimestamp(5,
-        (ticket.getOutTime() != null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
+    ticket.setOutTime(null);
     when(ps.execute()).thenReturn(true);
 
     // When
     boolean result = ticketDAOTest.saveTicket(ticket);
 
     // Then
-    assertFalse(result);
-    // verify(ps, times(1)).execute();
+    assertTrue(result);
+    verify(ps, times(1)).execute();
   }
 
   @Test
@@ -103,8 +103,7 @@ class TicketDAOTest {
     doNothing().when(ps).setString(2, ticket.getVehicleRegNumber());
     doNothing().when(ps).setDouble(3, ticket.getPrice());
     doNothing().when(ps).setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
-    doNothing().when(ps).setTimestamp(5,
-        (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
+    ticket.setOutTime(null);
     when(ps.execute()).thenReturn(false);
 
     // When
@@ -127,6 +126,7 @@ class TicketDAOTest {
     doNothing().when(ps).setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
     // doNothing().when(ps).setTimestamp(5,
 //        (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
+    ticket.setOutTime(outTime);
     when(ps.execute()).thenThrow(SQLException.class);
 
     // When

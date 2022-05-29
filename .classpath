@@ -25,5 +25,6 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="libs/src/mysql-connector-java-8.0.27.jar" sourcepath="libs/src/mysql-connector-java-8.0.27.jar"/>
 	<classpathentry kind="lib" path="libs/src/ojdbc11.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

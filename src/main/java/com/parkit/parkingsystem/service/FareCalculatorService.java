@@ -5,7 +5,6 @@ import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
-  // private double discount = 0.95;
 
   private TicketDAO ticketDAO = new TicketDAO();
 
