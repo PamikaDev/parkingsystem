@@ -2,7 +2,6 @@ package com.parkit.parkingsystem.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,7 +32,6 @@ class ParkingServiceTest {
   private ParkingService parkingServiceTest;
   private Ticket ticket;
   private static LogCaptor logcaptor;
-  @Mock
   private static ParkingSpot parkingSpot;
 
   @Mock
@@ -53,74 +51,12 @@ class ParkingServiceTest {
     parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
     ticket = new Ticket();
     ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-    ticket.setParkingSpot(parkingSpot);
-    ticket.setVehicleRegNumber("ABCDEF");
-    Date outTime = new Date();
-    ticket.setOutTime(outTime);
+
   }
 
   @AfterEach
   public void tearDownPerTest() {
     parkingServiceTest = null;
-  }
-
-  @Test
-  void processIncomingVehicleTest() throws Exception, IOException {
-
-    // GIVEN
-    when(inputReaderUtil.readSelection()).thenReturn(1);
-    when(parkingSpotDAO.getNextAvailableSlot(Mockito.any(ParkingType.class))).thenReturn(1);
-    when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn(null);
-    when(parkingSpotDAO.updateParking(Mockito.any(ParkingSpot.class))).thenReturn(true);
-    when(ticketDAO.saveTicket(Mockito.any(Ticket.class))).thenReturn(true);
-
-    // WHEN
-    parkingServiceTest.processIncomingVehicle();
-
-    // THEN
-    verify(inputReaderUtil, Mockito.times(1)).readSelection();
-    assertFalse(parkingSpot.isAvailable());
-
-  }
-
-  @Test
-  void processIncomingVehicleKOShouldassertException() throws Exception, IOException {
-
-    // GIVEN
-    when(inputReaderUtil.readSelection()).thenReturn(1);
-    when(parkingSpotDAO.getNextAvailableSlot(Mockito.any(ParkingType.class))).thenReturn(1);
-    when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn(null);
-    when(parkingSpotDAO.updateParking(Mockito.any(ParkingSpot.class))).thenReturn(true);
-    when(ticketDAO.saveTicket(Mockito.any(Ticket.class))).thenReturn(true);
-
-    // WHEN
-    parkingServiceTest.processIncomingVehicle();
-
-    // THEN
-    assertThat(logcaptor.getErrorLogs().contains("Unable to process exiting vehicle"));
-
-  }
-
-  @Test
-  void processIncomingVehicleKOShouldReturnFalse() throws Exception, IOException {
-
-    // GIVEN
-    parkingSpot.setId(0);
-    ticket.setParkingSpot(null);
-
-    when(inputReaderUtil.readSelection()).thenReturn(1);
-    when(parkingSpotDAO.getNextAvailableSlot(Mockito.any(ParkingType.class))).thenReturn(1);
-    when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn(null);
-    when(parkingSpotDAO.updateParking(Mockito.any(ParkingSpot.class))).thenReturn(false);
-    when(ticketDAO.saveTicket(Mockito.any(Ticket.class))).thenReturn(false);
-
-    // WHEN
-    parkingServiceTest.processIncomingVehicle();
-
-    // THEN
-    assertFalse(parkingSpot.isAvailable());
-    assertThat(logcaptor.getErrorLogs().contains("Unable to process exiting vehicle"));
-
   }
 
   @Test
@@ -136,7 +72,7 @@ class ParkingServiceTest {
     parkingServiceTest.processIncomingVehicle();
 
     // THEN
-    assertThat(logcaptor.getErrorLogs().contains("Le véhicule est déjà dans le parking"));
+    assertThat(logcaptor.getErrorLogs().contains("The vehicle is already inside"));
 
   }
 
@@ -153,7 +89,8 @@ class ParkingServiceTest {
     parkingServiceTest.processIncomingVehicle();
 
     // THEN
-    assertThat(logcaptor.getErrorLogs().contains("Le véhicule n'est plus dans le parking"));
+    assertThat(logcaptor.getErrorLogs().contains("The vehicle is no longer inside"));
+    assertThat(logcaptor.getErrorLogs().contains("Unable to process incoming vehicle"));
 
   }
 
@@ -222,7 +159,10 @@ class ParkingServiceTest {
     parkingServiceTest.getNextParkingNumberIfAvailable();
 
     // THEN
-    assertFalse(parkingSpot.isAvailable());
+    verify(inputReaderUtil, Mockito.times(1)).readSelection();
+    assertThat(logcaptor.getErrorLogs()
+        .contains("Error fetching parking number from DB. Parking slots might be full"));
+    assertThat(logcaptor.getErrorLogs().contains("Error fetching next available parking slot"));
 
   }
 
@@ -230,7 +170,6 @@ class ParkingServiceTest {
   void getNextParkingNumberIfAvailableKOShouldassertException() {
 
     // GIVEN
-    when(inputReaderUtil.readSelection()).thenReturn(1);
     when(inputReaderUtil.readSelection()).thenThrow(IllegalArgumentException.class);
 
     // WHEN
@@ -238,10 +177,7 @@ class ParkingServiceTest {
 
     // THEN
     assertFalse(parkingSpot.isAvailable());
-    assertThat(logcaptor.getErrorLogs()
-        .contains("Error fetching parking number from DB. Parking slots might be full"));
     assertThat(logcaptor.getErrorLogs().contains("Error parsing user input for type of vehicle"));
-    assertThat(logcaptor.getErrorLogs().contains("Error fetching next available parking slot"));
 
   }
 
@@ -257,6 +193,7 @@ class ParkingServiceTest {
     when(inputReaderUtil.readSelection()).thenReturn(0);
     parkingServiceTest.processIncomingVehicle();
     parkingServiceTest.processExitingVehicle();
+    assertThat(logcaptor.getErrorLogs().contains("Unable to process exiting vehicle"));
   }
 
   /**
@@ -266,39 +203,11 @@ class ParkingServiceTest {
    * @throws Exception
    */
   @Test
-  void processExitingVehicleTest() throws Exception {
-
-    // GIVEN
-
-    String vehicleRegNumber = "ABCDEF";
-    Date outTime = new Date();
-    ticket = new Ticket();
-    ticket.setOutTime(outTime);
-    ticket.setParkingSpot(parkingSpot);
-    parkingSpot.setAvailable(true);
-    when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn(vehicleRegNumber);
-    ticket.setVehicleRegNumber(inputReaderUtil.readVehicleRegistrationNumber());
-    when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-    when(ticketDAO.getVehicleOutside(Mockito.anyString())).thenReturn(true);
-    when(ticketDAO.getTicket(vehicleRegNumber)).thenReturn(ticket);
-    parkingSpot.setAvailable(true);
-
-    // WHEN
-    parkingServiceTest.processExitingVehicle();
-
-    // THEN
-    verify(inputReaderUtil, Mockito.times(2)).readVehicleRegistrationNumber();
-    assertTrue(parkingSpot.isAvailable());
-
-  }
-
-  @Test
   void processExitingVehicleOKVehicleAlreadyOutsideShouldassertException()
       throws Exception, IOException {
 
     // GIVEN
     String vehicleRegNumber = "ABCDEF";
-    ticket.setParkingSpot(parkingSpot);
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn(vehicleRegNumber);
     ticket.setVehicleRegNumber(inputReaderUtil.readVehicleRegistrationNumber());
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
@@ -310,8 +219,8 @@ class ParkingServiceTest {
     parkingServiceTest.processExitingVehicle();
 
     // THEN
-    assertThat(logcaptor.getErrorLogs().contains("The vehicle is already outside"));
-    assertTrue(parkingSpot.isAvailable());
+    verify(ticketDAO, Mockito.times(1)).getVehicleOutside(vehicleRegNumber);
+    assertThat(logcaptor.getInfoLogs().contains("The vehicle is already outside"));
 
   }
 
@@ -320,6 +229,8 @@ class ParkingServiceTest {
 
     // GIVEN
     String vehicleRegNumber = "ABCDEF";
+    Date outTime = new Date();
+    ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
     when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn(vehicleRegNumber);
     ticket.setVehicleRegNumber(inputReaderUtil.readVehicleRegistrationNumber());
@@ -332,7 +243,10 @@ class ParkingServiceTest {
     parkingServiceTest.processExitingVehicle();
 
     // THEN
-    assertThat(logcaptor.getErrorLogs().contains("The vehicle is already outside"));
+    assertThat(
+        logcaptor.getInfoLogs().contains("Please pay the parking fare:" + ticket.getPrice()));
+    assertThat(logcaptor.getInfoLogs().contains(
+        "Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:" + outTime));
 
   }
 
@@ -340,41 +254,22 @@ class ParkingServiceTest {
   void processExitingVehicleKOUpdateTicketTest() throws Exception {
 
     // GIVEN
+    String vehicleRegNumber = "ABCDEF";
     ticket.setParkingSpot(parkingSpot);
-    parkingSpot.setAvailable(false);
-    when(inputReaderUtil.readVehicleRegistrationNumber()).thenThrow(Exception.class);
+    when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn(vehicleRegNumber);
+    ticket.setVehicleRegNumber(inputReaderUtil.readVehicleRegistrationNumber());
+    when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+    when(ticketDAO.getVehicleOutside(Mockito.anyString())).thenReturn(false);
+    when(ticketDAO.getTicket(vehicleRegNumber)).thenReturn(ticket);
+    when(ticketDAO.updateTicket(Mockito.any(Ticket.class))).thenReturn(false);
 
     // WHEN
     parkingServiceTest.processExitingVehicle();
 
     // THEN
+    verify(ticketDAO, Mockito.times(1)).updateTicket(ticket);
     assertThat(
         logcaptor.getErrorLogs().contains("Unable to update ticket information. Error occurred"));
-  }
-
-  @Test
-  void processExitingVehicleOKUpdateParkingTest() throws Exception {
-
-    // GIVEN
-    String vehicleRegNumber = "ABCDEF";
-    Date outTime = new Date();
-    ticket = new Ticket();
-    ticket.setOutTime(outTime);
-    ticket.setParkingSpot(parkingSpot);
-    when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn(vehicleRegNumber);
-    when(ticketDAO.getTicket(Mockito.anyString())).thenReturn(ticket);
-    parkingSpot.setAvailable(false);
-
-    // WHEN
-    parkingServiceTest.processExitingVehicle();
-
-    // WHEN
-    assertFalse(parkingSpot.isAvailable());
-    assertThat(
-        logcaptor.getInfoLogs().contains("Please pay the parking fare:" + ticket.getPrice()));
-    assertThat(logcaptor.getInfoLogs().contains(
-        "Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:" + outTime));
-
   }
 
 }

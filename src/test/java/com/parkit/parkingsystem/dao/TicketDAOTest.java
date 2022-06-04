@@ -82,7 +82,7 @@ class TicketDAOTest {
     doNothing().when(ps).setString(2, ticket.getVehicleRegNumber());
     doNothing().when(ps).setDouble(3, ticket.getPrice());
     doNothing().when(ps).setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
-    ticket.setOutTime(null);
+    doNothing().when(ps).setTimestamp(5, new Timestamp(ticket.getOutTime().getTime()));
     when(ps.execute()).thenReturn(true);
 
     // When
@@ -103,29 +103,27 @@ class TicketDAOTest {
     doNothing().when(ps).setString(2, ticket.getVehicleRegNumber());
     doNothing().when(ps).setDouble(3, ticket.getPrice());
     doNothing().when(ps).setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
-    ticket.setOutTime(null);
+    doNothing().when(ps).setTimestamp(5, null);
     when(ps.execute()).thenReturn(false);
 
     // When
     boolean result = ticketDAOTest.saveTicket(ticket);
 
     // Then
-    assertTrue(result);
-    verify(ps, times(1)).execute();
+    assertFalse(result);
   }
 
   @Test
   public void saveTicketKoShouldassertException() throws SQLException, ClassNotFoundException {
 
     // Given
+    outTime = null;
     when(databaseConfig.getConnection()).thenReturn(con);
     when(con.prepareStatement(Mockito.anyString())).thenReturn(ps);
     doNothing().when(ps).setInt(1, ticket.getParkingSpot().getId());
     doNothing().when(ps).setString(2, ticket.getVehicleRegNumber());
     doNothing().when(ps).setDouble(3, ticket.getPrice());
     doNothing().when(ps).setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
-    // doNothing().when(ps).setTimestamp(5,
-//        (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
     ticket.setOutTime(outTime);
     when(ps.execute()).thenThrow(SQLException.class);
 

@@ -14,7 +14,6 @@ public class DBConstants {
   public static final String GET_INSIDE_VEHICLE = "select vehicle_reg_number from ticket where vehicle_reg_number=? and IN_TIME IS NOT NULL and OUT_TIME IS NULL";
   public static final String GET_OUTSIDE_VEHICLE = "select vehicle_reg_number from ticket where vehicle_reg_number=? and IN_TIME IS NULL and OUT_TIME IS NOT NULL";
 
-  // public static final String GET_INSIDE_OUTSIDE_VEHICLE = "select vehicle_reg_number from ticket
-  // where vehicle_reg_number=? and OUT_TIME IS NOT NULL and OUT_TIME IS NULL";
+  public static final String DB_PASSWORD = "rootroot";
 
 }

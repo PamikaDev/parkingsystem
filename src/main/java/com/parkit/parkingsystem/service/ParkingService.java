@@ -14,16 +14,16 @@ import com.parkit.parkingsystem.util.InputReaderUtil;
 
 public class ParkingService {
 
+  private final InputReaderUtil inputReaderUtil;
+  private final ParkingSpotDAO parkingSpotDAO;
+  private final TicketDAO ticketDAO;
+
   private static final Logger logger = LogManager.getLogger("ParkingService");
-
-  private InputReaderUtil inputReaderUtil;
-  private ParkingSpotDAO parkingSpotDAO;
-  private TicketDAO ticketDAO;
-
   private FareCalculatorService fareCalculatorService = new FareCalculatorService();
 
   public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO,
       TicketDAO ticketDAO) {
+    super();
     this.inputReaderUtil = inputReaderUtil;
     this.parkingSpotDAO = parkingSpotDAO;
     this.ticketDAO = ticketDAO;
@@ -35,13 +35,11 @@ public class ParkingService {
   public void processIncomingVehicle() {
     try {
       ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
-
       if (parkingSpot != null && parkingSpot.getId() > 0) {
         String vehicleRegNumber = getVehichleRegNumber();
         // check if (vehicleInside)
         if (ticketDAO.getVehicleInside(vehicleRegNumber)) {
           System.out.println("The vehicle is already inside");
-          logger.error("Le véhicule est déjà dans le parking");
           return;
         }
         // check if incoming vehicle is for a recurring user
@@ -92,7 +90,6 @@ public class ParkingService {
     } catch (Exception e) {
       logger.error("Error fetching next available parking slot", e);
     }
-
     return parkingSpot;
   }
 

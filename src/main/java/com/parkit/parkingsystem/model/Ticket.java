@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.parkit.parkingsystem.constants.ParkingType;
 
-public class Ticket {
+public final class Ticket {
   private int id;
   private ParkingSpot parkingSpot;
   private String vehicleRegNumber;
