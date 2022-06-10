@@ -19,7 +19,7 @@ public class FareCalculatorService {
     }
 
     /**
-     * Free 30-min parking + discount 5%. getTime() is in milliseconds and type of getTime() is long
+     * Free 30-min parking. getTime() is in milliseconds and type of getTime() is long
      */
     long inHour = ticket.getInTime().getTime();
     long outHour = ticket.getOutTime().getTime();
@@ -48,7 +48,7 @@ public class FareCalculatorService {
   }
 
   /**
-   * Check if discount
+   * Check if discount discount 5%
    *
    * @param ticket
    * @return
@@ -56,6 +56,7 @@ public class FareCalculatorService {
   public double checkDiscount(Ticket ticket) {
     String vehicleRegNumber = ticket.getVehicleRegNumber();
     boolean isrecurring = ticketDAO.isRecurring(vehicleRegNumber);
+
     if (isrecurring) {
       return 0.95;
     } else {

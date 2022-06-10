@@ -71,7 +71,6 @@ class FareCalculatorServiceTest {
     ticket.setInTime(inTime);
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setParkingType(parkingType);
     when(parkingSpot.getParkingType()).thenReturn(ParkingType.CAR);
 
     // WHEN
@@ -91,7 +90,6 @@ class FareCalculatorServiceTest {
     ticket.setInTime(inTime);
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setParkingType(parkingType);
     when(parkingSpot.getParkingType()).thenReturn(ParkingType.BIKE);
 
     // WHEN
@@ -113,7 +111,6 @@ class FareCalculatorServiceTest {
     ticket.setInTime(inTime);
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setParkingType(parkingType);
 
     // WHEN
     fareCalculatorServiceTest.calculateFare(ticket);
@@ -147,7 +144,6 @@ class FareCalculatorServiceTest {
     ticket.setInTime(inTime);
     ticket.setOutTime(outTime);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setParkingType(parkingType);
     when(parkingSpot.getParkingType()).thenReturn(null);
 
     // THEN
@@ -161,14 +157,6 @@ class FareCalculatorServiceTest {
   void checkDiscountTest() {
 
     // GIVEN
-    Date inTime = new Date();
-    inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
-    Date outTime = new Date();
-    ticket.setInTime(inTime);
-    ticket.setOutTime(outTime);
-    parkingSpot.setParkingType(parkingType);
-    ticket.setParkingSpot(parkingSpot);
-    ticket.setParkingType(parkingType);
     String vehicleRegNumber = "ABCDEF";
     ticket.setVehicleRegNumber(vehicleRegNumber);
     when(ticketDAO.isRecurring(Mockito.anyString())).thenReturn(true);
@@ -183,13 +171,10 @@ class FareCalculatorServiceTest {
   }
 
   @Test
-  void checkDiscountKOShouldassertException() {
+  void checkDiscountKOShouldreturnFalse() {
 
     // GIVEN
     String vehicleRegNumber = "ABCDEF";
-    parkingSpot.setParkingType(parkingType);
-    ticket.setParkingSpot(parkingSpot);
-    ticket.setParkingType(parkingType);
     ticketDAO.isRecurring(vehicleRegNumber);
     when(ticketDAO.isRecurring(Mockito.anyString())).thenReturn(false);
 
@@ -197,7 +182,6 @@ class FareCalculatorServiceTest {
     double result = fareCalculatorServiceTest.checkDiscount(ticket);
 
     // THEN
-    verify(ticketDAO, Mockito.times(1)).isRecurring(Mockito.anyString());
     assertFalse(ticketDAO.isRecurring(vehicleRegNumber));
     assertThat(result).isEqualTo(1);
   }
@@ -213,7 +197,6 @@ class FareCalculatorServiceTest {
     ticket.setOutTime(outTime);
     parkingSpot.setParkingType(parkingType);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setParkingType(parkingType);
     when(parkingSpot.getParkingType()).thenReturn(ParkingType.BIKE);
 
     // WHEN
@@ -234,7 +217,6 @@ class FareCalculatorServiceTest {
     ticket.setOutTime(outTime);
     parkingSpot.setParkingType(parkingType);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setParkingType(parkingType);
     when(parkingSpot.getParkingType()).thenReturn(ParkingType.CAR);
 
     // WHEN
@@ -255,7 +237,6 @@ class FareCalculatorServiceTest {
     ticket.setOutTime(outTime);
     parkingSpot.setParkingType(parkingType);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setParkingType(parkingType);
     when(parkingSpot.getParkingType()).thenReturn(ParkingType.CAR);
 
     // WHEN
@@ -276,7 +257,6 @@ class FareCalculatorServiceTest {
     ticket.setOutTime(outTime);
     parkingSpot.setParkingType(parkingType);
     ticket.setParkingSpot(parkingSpot);
-    ticket.setParkingType(parkingType);
     when(parkingSpot.getParkingType()).thenReturn(ParkingType.BIKE);
 
     // WHEN

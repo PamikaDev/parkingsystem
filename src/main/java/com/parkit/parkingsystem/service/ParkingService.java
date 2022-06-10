@@ -19,7 +19,7 @@ public class ParkingService {
   private final TicketDAO ticketDAO;
 
   private static final Logger logger = LogManager.getLogger("ParkingService");
-  private FareCalculatorService fareCalculatorService = new FareCalculatorService();
+  private static FareCalculatorService fareCalculatorService = new FareCalculatorService();
 
   public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO,
       TicketDAO ticketDAO) {
@@ -122,13 +122,13 @@ public class ParkingService {
       Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
       Date outTime = new Date();
       ticket.setOutTime(outTime);
+
       // check if (vehicleOutside)
       if (ticketDAO.getVehicleOutside(vehicleRegNumber)) {
         System.out.println("The vehicle is already outside");
         return;
       }
       fareCalculatorService.calculateFare(ticket);
-
       if (ticketDAO.updateTicket(ticket)) {
         ParkingSpot parkingSpot = ticket.getParkingSpot();
         parkingSpot.setAvailable(true);
