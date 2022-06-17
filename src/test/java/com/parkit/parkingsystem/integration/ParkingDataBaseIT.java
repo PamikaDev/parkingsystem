@@ -82,11 +82,11 @@ class ParkingDataBaseIT {
 
   @Test
   void testParkingLotExit() throws FileNotFoundException, IOException {
+
+    // GIVEN
     testParkingACar();
     final ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO,
         ticketDAO);
-
-    parkingService.processExitingVehicle();
     final Date date = new Date();
     final Date outTime = new Date();
 
@@ -94,6 +94,11 @@ class ParkingDataBaseIT {
     final double faregenerated = ticket.getPrice();
     ticket.setOutTime(outTime);
     final Date generatedTime = ticket.getOutTime();
+
+    // WHEN
+    parkingService.processExitingVehicle();
+
+    // THEN
     assertEquals(generatedTime, date);
     assertEquals(0.0, faregenerated);
   }

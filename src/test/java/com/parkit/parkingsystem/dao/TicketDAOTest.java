@@ -16,7 +16,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +33,6 @@ import nl.altindag.log.LogCaptor;
 @ExtendWith(MockitoExtension.class)
 class TicketDAOTest {
 
-  // Ma classe à tester
   private TicketDAO ticketDAOTest;
   private Ticket ticket;
   private static LogCaptor logcaptor;
@@ -66,10 +64,6 @@ class TicketDAOTest {
     ticket.setInTime(new Date());
     ticket.setOutTime(new Date());
     ticketDAOTest.setDataBaseConfig(databaseConfig);
-  }
-
-  @AfterEach
-  private void tearDownPerTest() {
   }
 
   @Test

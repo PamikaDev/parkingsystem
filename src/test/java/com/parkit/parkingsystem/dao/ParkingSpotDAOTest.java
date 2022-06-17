@@ -3,8 +3,6 @@ package com.parkit.parkingsystem.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,6 +29,7 @@ class ParkingSpotDAOTest {
   private static ParkingSpotDAO parkingSpotDAOUnderTest;
   private static LogCaptor logcaptor;
   private ParkingSpot parkingSpot;
+  private ParkingType parkingType;
 
   @Mock
   private DataBaseConfig databaseConfig;
@@ -53,118 +52,52 @@ class ParkingSpotDAOTest {
   @AfterAll
   public static void tearDown() {
     parkingSpotDAOUnderTest = null;
-  }
-
-  @Test
-  void getNextAvailableSlotTest_For_Bike_ShouldReturnTrue()
-      throws SQLException, ClassNotFoundException {
-
-    // GIVEN
-    parkingSpot = new ParkingSpot(1, ParkingType.BIKE, true);
-
-    // WHEN
-    final int parkingId = parkingSpotDAOUnderTest
-        .getNextAvailableSlot(parkingSpot.getParkingType());
-
-    // THEN
-    assertThat(parkingId).isEqualTo(4);
-    verify(ps, times(0)).executeQuery();
-    verify(rs, times(0)).next();
 
   }
 
   @Test
-  void getNextAvailableSlotTest_For_Bike_ShouldassertException()
-      throws SQLException, ClassNotFoundException {
-
-    // GIVEN
-    parkingSpot = new ParkingSpot(1, null, false);
-    // when(parkingSpot.getParkingType()).thenReturn(null);
-
-    // WHEN
-    parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType());
-
-    // THEN
-    assertThat(logcaptor.getErrorLogs().contains("Error fetching next available slot"));
-
-  }
-
-  @Test
-  void getNextAvailableSlotTest_For_Bike_ShouldReturnFalse()
-      throws SQLException, ClassNotFoundException {
-
-    // GIVEN
-    parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-
-    // WHEN
-    parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType());
-
-    // THEN
-    assertFalse(parkingSpot.isAvailable());
-    assertThat(parkingSpot.getParkingType()).isEqualTo(ParkingType.BIKE);
-    verify(ps, times(0)).executeQuery();
-    verify(rs, times(0)).next();
-  }
-
-  @Test
-  void getNextAvailableSlotTestrsNextFalse() throws SQLException, ClassNotFoundException {
-
-    // GIVEN
-    parkingSpot = new ParkingSpot(1, null, false);
-
-    // WHEN
-    parkingSpotDAOUnderTest.getNextAvailableSlot(null);
-
-    // THEN
-    assertFalse(parkingSpot.isAvailable());
-
-  }
-
-  @Test
-  void getNextAvailableSlotTest_For_Car_ShouldReturnTrue()
-      throws SQLException, ClassNotFoundException {
+  void getNextAvailableSlotTestShouldReturnTrue() throws SQLException, ClassNotFoundException {
 
     // GIVEN
     parkingSpot = new ParkingSpot(1, ParkingType.CAR, true);
+    parkingType = ParkingType.CAR;
 
     // WHEN
-    final int parkingId = parkingSpotDAOUnderTest
-        .getNextAvailableSlot(parkingSpot.getParkingType());
+    int parkingId = parkingSpotDAOUnderTest.getNextAvailableSlot(parkingType);
 
     // THEN
     assertTrue(parkingSpot.isAvailable());
-    assertThat(parkingId).isEqualTo(2);
-
+    assertThat(parkingId).isEqualTo(1);
   }
 
   @Test
-  void getNextAvailableSlotTest_For_Car_ShouldassertException()
-      throws SQLException, ClassNotFoundException {
+  void getNextAvailableSlotTestShouldReturnFalse() throws SQLException, ClassNotFoundException {
+
+    // GIVEN
+    parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
+    parkingType = ParkingType.BIKE;
+
+    // WHEN
+    int parkingId = parkingSpotDAOUnderTest.getNextAvailableSlot(parkingType);
+
+    // THEN
+    assertFalse(parkingSpot.isAvailable());
+    assertThat(parkingId).isEqualTo(4);
+  }
+
+  @Test
+  void getNextAvailableSlotTestShouldassertException() throws SQLException, ClassNotFoundException {
 
     // GIVEN
     parkingSpot = new ParkingSpot(1, null, false);
 
     // WHEN
-    parkingSpotDAOUnderTest.getNextAvailableSlot(parkingSpot.getParkingType());
-
-    // THEN
-    assertThat(logcaptor.getErrorLogs().contains("Error fetching next available slot"));
-  }
-
-  @Test
-  void getNextAvailableSlotTest_For_Car_ShouldReturnFalse()
-      throws SQLException, ClassNotFoundException {
-
-    // GIVEN
-    parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-
-    // WHEN
-    final int parkingId = parkingSpotDAOUnderTest
-        .getNextAvailableSlot(parkingSpot.getParkingType());
+    parkingSpotDAOUnderTest.getNextAvailableSlot(parkingType);
 
     // THEN
     assertFalse(parkingSpot.isAvailable());
-    assertThat(parkingId).isEqualTo(2);
+    assertThat(logcaptor.getErrorLogs().contains("Error fetching next available slot"));
+
   }
 
   @Test

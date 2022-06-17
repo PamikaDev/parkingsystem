@@ -64,9 +64,10 @@ public class TicketDAO {
         ticket.setPrice(rs.getDouble(3));
         ticket.setInTime(rs.getTimestamp(4));
         ticket.setOutTime(rs.getTimestamp(5));
-        dataBaseConfig.closeResultSet(rs);
-        dataBaseConfig.closePreparedStatement(ps);
+
       }
+      dataBaseConfig.closeResultSet(rs);
+      dataBaseConfig.closePreparedStatement(ps);
     } catch (Exception ex) {
       logger.error("Error fetching next available slot", ex);
     } finally {
@@ -89,7 +90,7 @@ public class TicketDAO {
       logger.error("Error updating ticket info", ex);
     } finally {
       dataBaseConfig.closePreparedStatement(null);
-      dataBaseConfig.closeConnection(con);
+      dataBaseConfig.closeConnection(null);
     }
     return false;
   }
@@ -104,10 +105,10 @@ public class TicketDAO {
       ps.setString(1, vehicleRegNumber);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
-        dataBaseConfig.closeResultSet(rs);
-        dataBaseConfig.closePreparedStatement(ps);
         return true;
       }
+      dataBaseConfig.closeResultSet(rs);
+      dataBaseConfig.closePreparedStatement(ps);
     } catch (Exception ex) {
       logger.error("Error checking vehicle reg number is for a recurring user", ex);
     } finally {
@@ -126,10 +127,10 @@ public class TicketDAO {
       ps.setString(1, vehicleRegNumber);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
-        dataBaseConfig.closeResultSet(rs);
-        dataBaseConfig.closePreparedStatement(ps);
         return true;
       }
+      dataBaseConfig.closeResultSet(rs);
+      dataBaseConfig.closePreparedStatement(ps);
 
     } catch (Exception ex) {
       logger.error("Error saving vehicle Reg Number", ex);
@@ -149,11 +150,11 @@ public class TicketDAO {
       ps.setString(1, vehicleRegNumber);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
-        dataBaseConfig.closeResultSet(rs);
-        dataBaseConfig.closePreparedStatement(ps);
         return true;
       }
 
+      dataBaseConfig.closeResultSet(rs);
+      dataBaseConfig.closePreparedStatement(ps);
     } catch (Exception ex) {
       logger.error("Error checking vehicleRegNumber is already inside", ex);
     } finally {
@@ -173,10 +174,11 @@ public class TicketDAO {
       ps.setString(1, vehicleRegNumber);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
-        dataBaseConfig.closeResultSet(rs);
-        dataBaseConfig.closePreparedStatement(ps);
+
         return true;
       }
+      dataBaseConfig.closeResultSet(rs);
+      dataBaseConfig.closePreparedStatement(ps);
 
     } catch (Exception ex) {
       logger.error("Error checking vehicleRegNumber is already outside", ex);
